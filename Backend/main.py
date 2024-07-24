@@ -31,6 +31,8 @@ def login():
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
+
+    
     token_url = 'https://accounts.spotify.com/api/token'
     headers = {
         'Authorization': 'Basic ' + base64.b64encode(f"{app.config['SPOTIFY_CLIENT_ID']}:{app.config['SPOTIFY_CLIENT_SECRET']}".encode()).decode(),
@@ -42,7 +44,10 @@ def callback():
         'redirect_uri': app.config['SPOTIFY_REDIRECT_URI']
     }
     response = requests.post(token_url, headers=headers, data=data)
+
+    
     token_info = response.json()
+
     session['access_token'] = token_info['access_token']
     return redirect(url_for('dashboard'))
 
@@ -50,7 +55,30 @@ def callback():
 def dashboard():
     access_token = session.get('access_token')
     if access_token:
-        return render_template('dashboard.html', access_token=access_token)
+        # Use the access token to make a request to the Spotify API
+        api_url = "https://api.spotify.com/v1/me"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        api_response = requests.get(api_url, headers=headers)
+        user_info = api_response.json()
+        
+        return render_template('dashboard.html', access_token=access_token, user_info=user_info)
+    else:
+        return redirect(url_for('home'))
+@app.route('/dashboard')
+def dashboard():
+    access_token = session.get('access_token')
+    if access_token:
+        # Use the access token to make a request to the Spotify API
+        api_url = "https://api.spotify.com/v1/me"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        api_response = requests.get(api_url, headers=headers)
+        user_info = api_response.json()
+        
+        return render_template('dashboard.html', access_token=access_token, user_info=user_info)
     else:
         return redirect(url_for('home'))
 

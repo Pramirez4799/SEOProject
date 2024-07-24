@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 </head>
-<body>
-    <h1>Welcome to the Dashboard</h1>
-    <p>You have successfully logged in with Spotify!</p>
-    <p>Access Token: {{ access_token }}</p>
-</body>
+    <body>
+        <h1>Welcome to the Dashboard</h1>
+        <p>You have successfully logged in with Spotify!</p>
+        <p>Access Token: {{ access_token }}</p>
+        <h2>User Information</h2>
+        <p>ID: {{ user_info.id }}</p>
+        <p>Display Name: {{ user_info.display_name }}</p>
+        <p>Email: {{ user_info.email }}</p>
+    </body>
 </html>
