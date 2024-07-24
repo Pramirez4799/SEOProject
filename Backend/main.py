@@ -1,15 +1,25 @@
-from flask import Flask, redirect
-from flask import request, jsonify
+from flask import Flask, redirect, render_template, request, session, url_for
+import requests
+import base64
+import os
+
 # instance of flask application
 app = Flask(__name__)
 # Use environment variables for deployment
 app.config['SPOTIFY_CLIENT_ID'] = '7fa25326cd8a4540ab9801dd5d4e3118'
 app.config['SPOTIFY_CLIENT_SECRET'] = '0fd7a582ec834c8c94d2433331d07bfe'
 app.config['SPOTIFY_REDIRECT_URI'] = 'http://localhost:5000/callback'
+app.secret_key = os.urandom(24)  # Add a secret key for session management
 
+
+#route to go to home page
+@app.route('/')
+def home():
+    return render_template('loginPage.html')
 #route to have user login to spotify account 
 @app.route('/login')
 def login():
+    print("Login route accessed")
     auth_url = (
         'https://accounts.spotify.com/authorize'
         '?response_type=code'
@@ -18,7 +28,6 @@ def login():
         '&scope=playlist-read-private'
     )
     return redirect(auth_url)
-
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
@@ -35,7 +44,15 @@ def callback():
     response = requests.post(token_url, headers=headers, data=data)
     token_info = response.json()
     session['access_token'] = token_info['access_token']
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard')
+def dashboard():
+    access_token = session.get('access_token')
+    if access_token:
+        return render_template('dashboard.html', access_token=access_token)
+    else:
+        return redirect(url_for('home'))
 
 @app.route('/')
 def hello_world():
