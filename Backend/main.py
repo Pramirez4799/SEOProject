@@ -17,6 +17,10 @@ app.secret_key = os.urandom(24)  # Add a secret key for session management
 @app.route('/')
 def home():
     return render_template('loginPage.html')
+#go to game page 
+@app.route('/gamePage')
+def goToGame():
+    return render_template('postGamePage.html')
 #route to have user login to spotify account 
 @app.route('/login')
 def login():
@@ -58,6 +62,7 @@ def get_user_playlists():
         }
         response = requests.get(api_url, headers=headers)
         if response.status_code == 200:
+            #create object with playlist items 
             playlists = response.json()
             return jsonify(playlists)
         else:
@@ -81,7 +86,23 @@ def dashboard():
         return render_template('dashboard.html', access_token=access_token, user_info=user_info)
     else:
         return redirect(url_for('home'))
-
+    
+@app.route('/playlist/<playlist_id>/tracks')
+def get_playlist_tracks(playlist_id):
+    access_token = session.get('access_token')
+    if access_token:
+        api_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            tracks = response.json()
+            return jsonify(tracks)
+        else:
+            return jsonify({"error": "Failed to fetch playlist tracks"}), response.status_code
+    else:
+        return redirect(url_for('home'))
 
 # Function to open a web browser
 def open_browser():

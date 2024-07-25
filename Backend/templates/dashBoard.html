@@ -5,40 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 </head>
-    <body>
-        <h1>Welcome to the Dashboard</h1>
-        <p>You have successfully logged in with Spotify!</p>
-        <p>Access Token: {{ access_token }}</p>
-        <h2>User Information</h2>
-        <p>ID: {{ user_info.id }}</p>
-        <p>Display Name: {{ user_info.display_name }}</p>
-        <p>Email: {{ user_info.email }}</p>
-        <h2>Playlists</h2>
-        <button onclick="getPlaylists()">Get Playlists</button>
-        <ul id="playlists"></ul>
-    
-        <script>
-            function getPlaylists() {
-                fetch('/playlists')
-                    .then(response => response.json())
-                    .then(data => {
-                        const playlistsElement = document.getElementById('playlists');
-                        playlistsElement.innerHTML = ''; 
-                        if (data.items) {
-                            data.items.forEach(playlist => {
+<body>
+    <h1>Welcome to the Dashboard</h1>
+    <p>You have successfully logged in with Spotify!</p>
+    <p>Access Token: {{ access_token }}</p>
+    <h2>User Information</h2>
+    <p>ID: {{ user_info.id }}</p>
+    <h2>Playlists</h2>
+    <button onclick="getPlaylists()">Get Playlists</button>
+    <ul id="playlists"></ul>
+
+    <script>
+        function getPlaylists() {
+            fetch('/playlists')
+                .then(response => response.json())
+                .then(data => {
+                    const playlistsElement = document.getElementById('playlists');
+                    playlistsElement.innerHTML = ''; 
+                    if (data.items) {
+                        data.items.forEach(playlist => {
+                            if (playlist.tracks.total >= 10) { // Filter playlists with at least 10 tracks
                                 const li = document.createElement('li');
                                 li.textContent = playlist.name;
+                                li.setAttribute('data-playlist-id', playlist.id); // Store playlist ID
+                                li.style.cursor = 'pointer'; // Make it clear that the item is clickable
+                                li.addEventListener('click', () => {
+                                    handlePlaylistClick(playlist.id); // Handle click event
+                                });
                                 playlistsElement.appendChild(li);
-                            });
-                        } else {
-                            playlistsElement.innerHTML = '<li>Error fetching playlists</li>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching playlists:', error);
-                    });
-            }
-        </script>
+                            }
+                        });
+                    } else {
+                        playlistsElement.innerHTML = '<li>Error fetching playlists</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching playlists:', error);
+                });
+        }
 
-    </body>
+        function handlePlaylistClick(playlistId) {
+            console.log(`Playlist ID clicked: ${playlistId}`);
+            
+            // Navigate to the game page with the playlist ID
+            const url = new URL('/gamePage', window.location.origin);
+            url.searchParams.append('playlistId', playlistId);
+            window.location.href = url;
+        }
+    </script>
+</body>
 </html>
