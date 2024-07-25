@@ -1,8 +1,9 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 import requests
 import base64
 import os
-
+import webbrowser
+from threading import Timer
 # instance of flask application
 app = Flask(__name__)
 # Use environment variables for deployment
@@ -28,11 +29,10 @@ def login():
         '&scope=playlist-read-private'
     )
     return redirect(auth_url)
+
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
-
-    
     token_url = 'https://accounts.spotify.com/api/token'
     headers = {
         'Authorization': 'Basic ' + base64.b64encode(f"{app.config['SPOTIFY_CLIENT_ID']}:{app.config['SPOTIFY_CLIENT_SECRET']}".encode()).decode(),
@@ -44,28 +44,28 @@ def callback():
         'redirect_uri': app.config['SPOTIFY_REDIRECT_URI']
     }
     response = requests.post(token_url, headers=headers, data=data)
-
-    
     token_info = response.json()
-
     session['access_token'] = token_info['access_token']
     return redirect(url_for('dashboard'))
 
-@app.route('/dashboard')
-def dashboard():
+@app.route('/playlists')
+def get_user_playlists():
     access_token = session.get('access_token')
     if access_token:
-        # Use the access token to make a request to the Spotify API
-        api_url = "https://api.spotify.com/v1/me"
+        api_url = "https://api.spotify.com/v1/me/playlists"
         headers = {
             "Authorization": f"Bearer {access_token}"
         }
-        api_response = requests.get(api_url, headers=headers)
-        user_info = api_response.json()
-        
-        return render_template('dashboard.html', access_token=access_token, user_info=user_info)
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            playlists = response.json()
+            return jsonify(playlists)
+        else:
+            return jsonify({"error": "Failed to fetch user playlists"}), response.status_code
     else:
         return redirect(url_for('home'))
+
+
 @app.route('/dashboard')
 def dashboard():
     access_token = session.get('access_token')
@@ -82,9 +82,11 @@ def dashboard():
     else:
         return redirect(url_for('home'))
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
 
+# Function to open a web browser
+def open_browser():
+    webbrowser.open_new_tab("http://127.0.0.1:5000/")
 if __name__ == '__main__':
+    # Set a timer to open the browser after a short delay
+    Timer(1, open_browser).start()
     app.run(debug=True)

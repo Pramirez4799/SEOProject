@@ -13,5 +13,32 @@
         <p>ID: {{ user_info.id }}</p>
         <p>Display Name: {{ user_info.display_name }}</p>
         <p>Email: {{ user_info.email }}</p>
+        <h2>Playlists</h2>
+        <button onclick="getPlaylists()">Get Playlists</button>
+        <ul id="playlists"></ul>
+    
+        <script>
+            function getPlaylists() {
+                fetch('/playlists')
+                    .then(response => response.json())
+                    .then(data => {
+                        const playlistsElement = document.getElementById('playlists');
+                        playlistsElement.innerHTML = ''; 
+                        if (data.items) {
+                            data.items.forEach(playlist => {
+                                const li = document.createElement('li');
+                                li.textContent = playlist.name;
+                                playlistsElement.appendChild(li);
+                            });
+                        } else {
+                            playlistsElement.innerHTML = '<li>Error fetching playlists</li>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching playlists:', error);
+                    });
+            }
+        </script>
+
     </body>
 </html>
