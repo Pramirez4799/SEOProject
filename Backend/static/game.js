@@ -1,4 +1,6 @@
 let numberOfSongsGuessed = 0;
+let correctSong; // Define this globally so it can be accessed in the event listeners
+const choicesArray = [];
 
 // Function to get URL parameters
 function getQueryParams() {
@@ -8,8 +10,6 @@ function getQueryParams() {
 
 // Array to store all songs of the playlist
 const songsArray = [];
-// Array to store choice of possible songs (4 songs)
-const choicesArray = [];
 
 // Fetch and display songs for the selected playlist
 function fetchSongs(playlistId) {
@@ -31,7 +31,7 @@ function fetchSongs(playlistId) {
 
             // Select random song and assign that as the song to be guessed
             const randomIndex = Math.floor(Math.random() * songsArray.length);
-            const correctSong = songsArray[randomIndex];
+            correctSong = songsArray[randomIndex];
             // First index is always the correct song
             choicesArray[0] = correctSong;
             console.log('Selected song:', correctSong);
@@ -65,14 +65,33 @@ function fetchSongs(playlistId) {
             // Automatically play the correct song
             playSong(correctSong.preview_url);
 
-            // Display songs as choices in the console
-            choicesArray.forEach((song, index) => {
-                console.log(`Choice ${index + 1}: ${song.name}`);
+            // Set up event listeners for the choices
+            songChoice1.addEventListener("click", function() {
+                handleGuess(choicesArray[0]);
+            });
+            songChoice2.addEventListener("click", function() {
+                handleGuess(choicesArray[1]);
+            });
+            songChoice3.addEventListener("click", function() {
+                handleGuess(choicesArray[2]);
+            });
+            songChoice4.addEventListener("click", function() {
+                handleGuess(choicesArray[3]);
             });
         })
         .catch(error => {
             console.error('Error fetching playlist songs:', error);
         });
+}
+
+// Function to handle the guess
+function handleGuess(selectedSong) {
+    if (selectedSong.name === correctSong.name) {
+        console.log("Nice!");
+        numberOfSongsGuessed++;
+    } else {
+        console.log("Wrongggggggggggggggg");
+    }
 }
 
 // Function to shuffle an array (Fisher-Yates shuffle algorithm)
