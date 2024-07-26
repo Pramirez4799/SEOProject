@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Quiz</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,68 +113,31 @@
         </div>
         <div class="timer">TIMER</div>
         <div class="song-animation">song animation</div>
-        <div class="play-snippet">Play snippet</div>
+        <div class="play-snippet">
+            <audio id="audioPlayer" controls></audio>
+        </div>
         <div class="choices">
-            <button>choice 1</button>
-            <button>choice 2</button>
-            <button>choice 3</button>
-            <button>choice 4</button>
+            <button id="song1"></button>
+            <button id="song2"></button>
+            <button id="song3"></button>
+            <button id="song4"></button>
         </div>
         <button class="next-song">Next Song</button>
         <div class="song-list" id="songList"></div>
     </div>
-
-    <script>
-        // Function to get query parameters
-        function getQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            return Object.fromEntries(params.entries());
-        }
-
-        // Fetch and display songs for the selected playlist
-        function fetchSongs(playlistId) {
-            fetch(`/playlist/${playlistId}/tracks`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Songs:', data); // Log songs to the console for now
-                    const songListElement = document.getElementById('songList');
-                    songListElement.innerHTML = '<h3>Playlist Songs:</h3>';
-                    if (data.items) {
-                        const ul = document.createElement('ul');
-                        data.items.forEach(item => {
-                            const li = document.createElement('li');
-                            li.textContent = `${item.track.name} by ${item.track.artists.map(artist => artist.name).join(', ')}`;
-                            ul.appendChild(li);
-                        });
-                        songListElement.appendChild(ul);
-                    } else {
-                        songListElement.innerHTML += '<p>No songs found in this playlist.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching playlist songs:', error);
-                });
-        }
-
-        // Get playlistId from URL parameters and fetch songs
-        const queryParams = getQueryParams();
-        if (queryParams.playlistId) {
-            fetchSongs(queryParams.playlistId);
-        } else {
-            console.error('No playlistId found in URL parameters');
-        }
-    </script>
 </body>
+<script src="static\game.js"></script>
 </html>
 easy is 30 sec per Song
 med is 15 sec per Song
 hard is 6 per songg 
 
 once you get to this page
-store all songs in a list for the playlist id selected 
-keep track of how many songs are selected correctly
+x store all songs in a list for the playlist id selected 
+x keep track of how many songs are selected correctly
 start timer (medium mode for testing and it will be 2min 30 sec)
-pick one random song 
+X pick one random song 
+    remove it from array 
 use that song to be the one that gets played
     add a button to play song and a pause button to stop song 
 add that song to one of choices and make sure its random 
