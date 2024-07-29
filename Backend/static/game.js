@@ -1,17 +1,15 @@
 let numberOfSongsGuessed = 0;
-let correctSong; // Define this globally so it can be accessed in the event listeners
+let correctSong; 
 const choicesArray = [];
-
-// Function to get URL parameters
-function getQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    return Object.fromEntries(params.entries());
-}
-
-// Array to store all songs of the playlist
+// array that stores all songs of playlist 
 const songsArray = [];
+// Get playlistId from URL parameters and fetch songs
+const queryParams = getQueryParams();
+fetchSongs(queryParams.playlistId);
 
-// Fetch and display songs for the selected playlist
+
+
+//functions below
 function fetchSongs(playlistId) {
     fetch(`/playlist/${playlistId}/tracks`)
         .then(response => response.json())
@@ -20,16 +18,14 @@ function fetchSongs(playlistId) {
                 console.error('Error fetching playlist songs:', data.error);
                 return;
             }
-            
             // Log songs to the console
             console.log('Songs:', data);
+            //add songs to songsArray with name and preview URLs
             data.items.forEach(item => {
-                // Add songs to array with their preview URLs
                 songsArray.push({ name: item.track.name, preview_url: item.track.preview_url });
             });
             console.log('array:', songsArray);
-
-            // Select random song and assign that as the song to be guessed
+            //select a random number and use that to determine song from array 
             const randomIndex = Math.floor(Math.random() * songsArray.length);
             correctSong = songsArray[randomIndex];
             // First index is always the correct song
@@ -84,7 +80,7 @@ function fetchSongs(playlistId) {
         });
 }
 
-// Function to handle the guess
+// function to handle the guess
 function handleGuess(selectedSong) {
     if (selectedSong.name === correctSong.name) {
         console.log("Nice!");
@@ -92,9 +88,10 @@ function handleGuess(selectedSong) {
     } else {
         console.log("Wrongggggggggggggggg");
     }
+    fetchSongs(queryParams.playlistId);
 }
 
-// Function to shuffle an array (Fisher-Yates shuffle algorithm)
+// function to shuffle the choicesArray
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -102,17 +99,21 @@ function shuffleArray(array) {
     }
 }
 
-// Function to play the selected song
+// function to play the selected song
 function playSong(previewUrl) {
     const audioPlayer = document.getElementById('audioPlayer');
     audioPlayer.src = previewUrl;
     audioPlayer.play();
 }
 
-// Get playlistId from URL parameters and fetch songs
-const queryParams = getQueryParams();
-if (queryParams.playlistId) {
-    fetchSongs(queryParams.playlistId);
-} else {
-    console.error('No playlistId found in URL parameters');
+//function to get id from url
+function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    return Object.fromEntries(params.entries());
+}
+// function loadNextSong(){
+
+// }
+function loadSongsToPage(){
+    
 }
