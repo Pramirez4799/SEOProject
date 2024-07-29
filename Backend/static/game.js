@@ -1,4 +1,5 @@
 let numberOfSongsGuessed = 0;
+let numOfSongs = 0;
 let correctSong; 
 const choicesArray = [];
 // Display songs in HTML elements
@@ -29,8 +30,14 @@ songChoice3.addEventListener("click", handleSongChoiceClick2);
 songChoice4.addEventListener("click", handleSongChoiceClick3);
 // array that stores all songs of playlist 
 const songsArray = [];
+// Variables to keep track of the time
+let countdownTime = 120; // Time in seconds
+let timerInterval;
 // Get playlistId from URL parameters and fetch songs
 const queryParams = getQueryParams();
+// Start the countdown timer
+startCountdown();
+
 initializePage();
 
 //functions below!!!!!!!!!!!!!!!!!!!!!!!!
@@ -109,9 +116,11 @@ function getQueryParams() {
 }
 
 function loadSongsToPage() {
+    //only quiz up to 10 songs 
+    if(numOfSongs < 11){
     // Log songs to the console
     console.log('Songs:', songsArray);
-    
+    console.log(numberOfSongsGuessed);
     // Select a random number and use that to determine the correct song from the array
     const randomIndex = Math.floor(Math.random() * songsArray.length);
     correctSong = songsArray[randomIndex];
@@ -146,7 +155,48 @@ function loadSongsToPage() {
 
     // Automatically play the correct song
     playSong(correctSong.preview_url);
+    numOfSongs++;
+    }
+
 }
+
+// Function to start the countdown timer
+function startCountdown() {
+    // Clear any existing interval
+    clearInterval(timerInterval);
+
+    // Update the timer display every second
+    timerInterval = setInterval(() => {
+        countdownTime--;
+        
+        // Update the display
+        updateTimerDisplay(countdownTime);
+
+        // Stop the timer if time is up
+        if (countdownTime <= 0) {
+            clearInterval(timerInterval);
+            handleTimeUp();
+        }
+    }, 1000);
+}
+
+// Function to update the timer display
+function updateTimerDisplay(time) {
+    // Convert seconds to minutes and seconds
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    
+    // Format the display (e.g., "01:30")
+    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timer123').innerHTML = display;
+}
+
+// Function to handle what happens when the timer runs out
+function handleTimeUp() {
+    console.log('Time is up!');
+    // Add additional logic here, e.g., end the game, show a message, etc.
+}
+
 
 
 
