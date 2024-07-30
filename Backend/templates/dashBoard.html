@@ -48,7 +48,7 @@
             console.log(`Playlist ID clicked: ${playlistId}`);
             
             // Navigate to the game page with the playlist ID
-            const url = new URL('/gamePage', window.location.origin);
+            const url = new URL('/settingsPage', window.location.origin);
             url.searchParams.append('playlistId', playlistId);
             window.location.href = url;
         }

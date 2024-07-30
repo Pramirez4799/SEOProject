@@ -21,6 +21,12 @@ def home():
 @app.route('/gamePage')
 def goToGame():
     return render_template('postGamePage.html')
+
+#go to settings page 
+@app.route('/settingsPage')
+def goToSettings():
+    return render_template('settingsPage.html')
+
 #route to have user login to spotify account 
 @app.route('/login')
 def login():
