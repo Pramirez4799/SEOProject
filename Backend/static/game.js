@@ -186,15 +186,15 @@ function updateTimerDisplay(time) {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     
-    // Format the display (e.g., "01:30")
+    //format display 
     const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     document.getElementById('timer123').innerHTML = display;
 }
 
-// Function to handle what happens when the timer runs out
+// handle what happens when time goes out 
 function handleTimeUp() {
     console.log('Time is up!');
-    // Add additional logic here, e.g., end the game, show a message, etc.
+    //go to score page 
 }
 
 
