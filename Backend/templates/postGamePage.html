@@ -5,139 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Quiz</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .grid-container {
+        .container {
             display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            grid-template-rows: auto auto auto auto;
-            gap: 10px;
-            padding: 20px;
+            grid-template-columns: 1fr 3fr 1fr;
+            grid-template-rows: 1fr 2fr 2fr 1fr;
+            grid-template-areas: 
+                "menu123 . timer123"
+                ".  display  ."
+                ". choices ."
+                ". footer .";
         }
         .menu {
-            grid-column: 1;
-            grid-row: 1;
-            background-color: lightgrey;
-            padding: 10px;
-            text-align: center;
+            grid-area: menu123;
+            color: rgb(5, 5, 5);
         }
-        .song-info {
-            grid-column: 2;
-            grid-row: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .timer123 {
+            grid-area: timer123;
+            background-color: rgb(255, 251, 0);
         }
-        .song-info .song-name,
-        .song-info .artist-name {
-            background-color: lightcoral;
-            color: white;
-            padding: 10px;
-            margin: 5px;
-        }
-        .timer {
-            grid-column: 3;
-            grid-row: 1;
-            background-color: red;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-        .song-animation {
-            grid-column: 1 / span 3;
-            grid-row: 2;
-            background-color: lightcoral;
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-        .play-snippet {
-            grid-column: 1 / span 3;
-            grid-row: 3;
-            background-color: lightcoral;
-            padding: 20px;
-            text-align: center;
-            color: white;
+        .display {
+            grid-area: display;
+            background-color: rgb(5, 28, 241);
         }
         .choices {
-            grid-column: 1 / span 3;
-            grid-row: 4;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            justify-items: center;
+            grid-area: choices;
+            background-color: rgb(97, 248, 37);
         }
-        .choices button {
+        .footer {
+            grid-area: footer;
+            background-color: rgb(252, 5, 5);
             padding: 10px;
-            width: 100%;
-            background-color: lightgrey;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .choices button:hover {
-            background-color: grey;
-            color: white;
-        }
-        .next-song {
-            grid-column: 2;
-            grid-row: 5;
-            padding: 10px;
-            background-color: lightgrey;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .next-song:hover {
-            background-color: grey;
-            color: white;
-        }
-        .song-list {
-            grid-column: 1 / span 3;
-            grid-row: 6;
-            background-color: lightgrey;
-            padding: 20px;
-            color: black;
-            text-align: left;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="grid-container">
+    <div class="container">
         <div class="menu">Menu</div>
-        <div id="timer123">TIMER</div>
-        <div class="song-animation">song animation</div>
-        <div class="play-snippet">
-            <audio id="audioPlayer" controls></audio>
+        <div class="timer123">Timer</div>
+        <div class="display">
+            <div class="song-animation">Song Image</div>
         </div>
         <div class="choices">
-            <button id="song1"></button>
-            <button id="song2"></button>
-            <button id="song3"></button>
-            <button id="song4"></button>
+            <button id="song1">Song 1</button>
+            <button id="song2">Song 2</button>
+            <button id="song3">Song 3</button>
+            <button id="song4">Song 4</button>
         </div>
-        <div class="song-list" id="songList"></div>
+        <div class="footer">Correct/Wrong</div>
     </div>
+    <script src="static/game.js"></script>
 </body>
-<script src="static\game.js"></script>
 </html>
-<!-- easy is 30 sec per Song
-med is 15 sec per Song
-hard is 6 per songg 
-
-once you get to this page
-x store all songs in a list for the playlist id selected 
-x keep track of how many songs are selected correctly
-start timer (medium mode for testing and it will be 2min 30 sec)
-X pick one random song 
-    remove it from array 
-use that song to be the one that gets played
-    add a button to play song and a pause button to stop song 
-add that song to one of choices and make sure its random 
-pick three other different songs (all songs must be a different choice)
-if correct songs is picked then go to next song
-if wrong song is selected then still go to next song
-once done calcualted score based on number selected correctly x time remaining x difficulty (have chat tweak this algo)
-$env:FLASK_APP = ".\Backend\main.py" -->
