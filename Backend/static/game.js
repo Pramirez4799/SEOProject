@@ -71,8 +71,10 @@ function handleGuess(selectedSong) {
     if (selectedSong.name === correctSong.name) {
         console.log("Nice!");
         numberOfSongsGuessed++;
+        updateAnswer(true);
     } else {
         console.log("Wrongggggggggggggggg");
+        updateAnswer(false);
     }
 
 }
@@ -191,11 +193,30 @@ function updateTimerDisplay(time) {
     document.getElementById('timer123').innerHTML = display;
 }
 
+function updateAnswer(value) {
+    if (value == true){
+        document.getElementById('footer').innerHTML = "Correct";
+    }
+    else if (value == false){
+        document.getElementById('footer').innerHTML = "Wrong";
+    }
+    
+    // Check if 10 songs have been guessed
+    if (numOfSongs >= 10) {
+        showModal();
+    }
+}
+
+
 // handle what happens when time goes out 
 function handleTimeUp() {
     console.log('Time is up!');
-    //go to score page 
+    showModal();
 }
+function showModal() {
+    document.getElementById('my_modal_6').checked = true;
+}
+
 
 
 
