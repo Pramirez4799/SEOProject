@@ -1,12 +1,24 @@
 let numberOfSongsGuessed = 0;
 let numOfSongs = 0;
-let correctSong; 
+let correctSong;
 const choicesArray = [];
+const songsArray = []; // Declare this at the top
+
+// Function to reset game data
+function resetGame() {
+    numberOfSongsGuessed = 0;
+    numOfSongs = 0;
+    correctSong = null;
+    choicesArray.length = 0;
+    songsArray.length = 0; // Clear songsArray
+}
+
 // Display songs in HTML elements
 const songChoice1 = document.getElementById("song1");
 const songChoice2 = document.getElementById("song2");
 const songChoice3 = document.getElementById("song3");
 const songChoice4 = document.getElementById("song4");
+
 function handleSongChoiceClick0() {
     handleGuess(choicesArray[0]);
     loadSongsToPage();
@@ -23,32 +35,42 @@ function handleSongChoiceClick3() {
     handleGuess(choicesArray[3]);
     loadSongsToPage();
 }
-// Add new event listeners
+
+// Add event listeners
 songChoice1.addEventListener("click", handleSongChoiceClick0);
 songChoice2.addEventListener("click", handleSongChoiceClick1);
 songChoice3.addEventListener("click", handleSongChoiceClick2);
 songChoice4.addEventListener("click", handleSongChoiceClick3);
-// array that stores all songs of playlist 
-const songsArray = [];
+
 // Variables to keep track of the time
 let countdownTime = 120; // Time in seconds
 let timerInterval;
+
 // Get playlistId from URL parameters and fetch songs
-const queryParams = getQueryParams();
+// const queryParams = getQueryParams();
 // Start the countdown timer
 startCountdown();
-
+// Reset the game state
+resetGame();
 initializePage();
 
-//functions below!!!!!!!!!!!!!!!!!!!!!!!!
+// Functions below
+
+function getPlaylistId() {
+    return sessionStorage.getItem('playlistId');
+}
+
 async function initializePage() {
-    await fetchSongs(queryParams.playlistId);
+    const playlistId = getPlaylistId();
+    await fetchSongs(playlistId);
     loadSongsToPage();
 }
-//grab all songs and load to songs array (only need to do once )
+
+// Grab all songs and load to songs array (only need to do once)
 async function fetchSongs(playlistId) {
     try {
-        const response = await fetch(`/playlist/${playlistId}/tracks`);
+        // Add a cache-busting query parameter
+        const response = await fetch(`/playlist/${playlistId}/tracks?nocache=${new Date().getTime()}`);
         const data = await response.json();
 
         if (data.error) {
@@ -56,30 +78,32 @@ async function fetchSongs(playlistId) {
             return;
         }
 
-        //add songs to songsArray with name and preview URLs
+        // Clear the songsArray before adding new songs
+        songsArray.length = 0;
+
+        // Add songs to songsArray with name and preview URLs
         data.items.forEach(item => {
             songsArray.push({ name: item.track.name, preview_url: item.track.preview_url });
         });
 
-        // console.log('Songs:', songsArray);
     } catch (error) {
         console.error('Error fetching playlist songs:', error);
     }
 }
-// function to handle the guess
+
+// Function to handle the guess
 function handleGuess(selectedSong) {
     if (selectedSong.name === correctSong.name) {
         console.log("Nice!");
         numberOfSongsGuessed++;
         updateAnswer(true);
     } else {
-        console.log("Wrongggggggggggggggg");
+        console.log("Wrong!");
         updateAnswer(false);
     }
-
 }
 
-// function to shuffle the choicesArray
+// Function to shuffle the choicesArray
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -87,7 +111,7 @@ function shuffleArray(array) {
     }
 }
 
-// function to play the selected song
+// Function to play the selected song
 function playSong(previewUrl) {
     const audioPlayer = document.getElementById('audioPlayer');
     
@@ -110,56 +134,55 @@ function playSong(previewUrl) {
     }, { once: true }); // The event listener is only needed once
 }
 
-
-//function to get id from url
+// Function to get id from URL
 function getQueryParams() {
     const params = new URLSearchParams(window.location.search);
     return Object.fromEntries(params.entries());
 }
 
 function loadSongsToPage() {
-    //only quiz up to 10 songs 
+    // Only quiz up to 10 songs 
     if(numOfSongs < 11){
-    // Log songs to the console
-    console.log('Songs:', songsArray);
-    console.log(numberOfSongsGuessed);
-    // Select a random number and use that to determine the correct song from the array
-    const randomIndex = Math.floor(Math.random() * songsArray.length);
-    correctSong = songsArray[randomIndex];
-    
-    // First index is always the correct song
-    choicesArray[0] = correctSong;
-    songsArray.splice(randomIndex, 1);
-    // Copy the array of songs
-    const copiedSongsArray = [...songsArray];
-    
-    // Remove the correct song from the array so that the other three options are different songs
-    copiedSongsArray.splice(randomIndex, 1);
+        // Log songs to the console
+        console.log('Songs:', songsArray);
+        console.log(numberOfSongsGuessed);
 
-    // Select three more different songs and add them to choicesArray
-    for (let i = 1; i < 4; i++) {
-        const anotherRandomIndex = Math.floor(Math.random() * copiedSongsArray.length);
-        const otherSong = copiedSongsArray[anotherRandomIndex];
-        choicesArray[i] = otherSong;
-        // Remove song from possible choices
-        copiedSongsArray.splice(anotherRandomIndex, 1);
+        // Select a random number and use that to determine the correct song from the array
+        const randomIndex = Math.floor(Math.random() * songsArray.length);
+        correctSong = songsArray[randomIndex];
+        
+        // First index is always the correct song
+        choicesArray[0] = correctSong;
+        songsArray.splice(randomIndex, 1);
+        // Copy the array of songs
+        const copiedSongsArray = [...songsArray];
+        
+        // Remove the correct song from the array so that the other three options are different songs
+        copiedSongsArray.splice(randomIndex, 1);
+
+        // Select three more different songs and add them to choicesArray
+        for (let i = 1; i < 4; i++) {
+            const anotherRandomIndex = Math.floor(Math.random() * copiedSongsArray.length);
+            const otherSong = copiedSongsArray[anotherRandomIndex];
+            choicesArray[i] = otherSong;
+            // Remove song from possible choices
+            copiedSongsArray.splice(anotherRandomIndex, 1);
+        }
+
+        console.log('Copied Songs Array:', copiedSongsArray);
+        
+        // Shuffle choicesArray to randomize the position of the correct song
+        shuffleArray(choicesArray);
+        // Change song names
+        songChoice1.innerHTML = choicesArray[0].name;
+        songChoice2.innerHTML = choicesArray[1].name;
+        songChoice3.innerHTML = choicesArray[2].name;
+        songChoice4.innerHTML = choicesArray[3].name;
+
+        // Automatically play the correct song
+        playSong(correctSong.preview_url);
+        numOfSongs++;
     }
-
-    console.log('Copied Songs Array:', copiedSongsArray);
-    
-    // Shuffle choicesArray to randomize the position of the correct song
-    shuffleArray(choicesArray);
-    //change song names
-    songChoice1.innerHTML = choicesArray[0].name;
-    songChoice2.innerHTML = choicesArray[1].name;
-    songChoice3.innerHTML = choicesArray[2].name;
-    songChoice4.innerHTML = choicesArray[3].name;
-
-    // Automatically play the correct song
-    playSong(correctSong.preview_url);
-    numOfSongs++;
-    }
-
 }
 
 // Function to start the countdown timer
@@ -188,16 +211,16 @@ function updateTimerDisplay(time) {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     
-    //format display 
+    // Format display 
     const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     document.getElementById('timer123').innerHTML = display;
 }
 
 function updateAnswer(value) {
-    if (value == true){
+    if (value === true){
         document.getElementById('footer').innerHTML = "Correct";
     }
-    else if (value == false){
+    else if (value === false){
         document.getElementById('footer').innerHTML = "Wrong";
     }
     
@@ -207,20 +230,12 @@ function updateAnswer(value) {
     }
 }
 
-
-// handle what happens when time goes out 
+// Handle what happens when time runs out 
 function handleTimeUp() {
     console.log('Time is up!');
     showModal();
 }
+
 function showModal() {
     document.getElementById('my_modal_6').checked = true;
 }
-
-
-
-
-
-
-
-

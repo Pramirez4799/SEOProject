@@ -49,7 +49,10 @@
             
             // Navigate to the game page with the playlist ID
             const url = new URL('/gamePage', window.location.origin);
-            url.searchParams.append('playlistId', playlistId);
+            // url.searchParams.append('playlistId', playlistId);
+            // Store playlist ID in session storage
+            sessionStorage.setItem('playlistId', playlistId);
+
             window.location.href = url;
         }
     </script>
