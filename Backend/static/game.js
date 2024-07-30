@@ -2,7 +2,8 @@ let numberOfSongsGuessed = 0;
 let numOfSongs = 0;
 let correctSong;
 const choicesArray = [];
-const songsArray = []; // Declare this at the top
+const songsArray = []; 
+let roundNum = -1;
 
 // Function to reset game data
 function resetGame() {
@@ -182,6 +183,8 @@ function loadSongsToPage() {
         // Automatically play the correct song
         playSong(correctSong.preview_url);
         numOfSongs++;
+        roundNum++;
+        document.getElementById('roundnumber').innerHTML = roundNum;
     }
 }
 

@@ -13,7 +13,7 @@
             grid-template-columns: 1fr 3fr 1fr;
             grid-template-rows: 1fr 2fr 2fr 1fr;
             grid-template-areas: 
-                "menu123 . timer123"
+                "menu123 roundnumber timer123"
                 ".  display  ."
                 ". choices ."
                 ". footer .";
@@ -21,6 +21,11 @@
         .menu {
             grid-area: menu123;
             color: rgb(5, 5, 5);
+        }
+        .roundnumber{
+            grid-area: roundnumber;
+            color: rgb(23, 233, 146);
+            text-align: center;
         }
         .timer123 {
             grid-area: timer123;
@@ -101,6 +106,7 @@
 
     <div class="container">
         <div class="menu">Menu</div>
+        <div class="roundnumber" id = "roundnumber"></div>
         <div class="timer123">
             <span id="timer123" class="countdown font-mono text-6xl">
                 <span style="--value:${counter};"></span>
