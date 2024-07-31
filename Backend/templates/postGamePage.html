@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Music Quiz</title>
-    <!-- install daisyUI -->
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
       rel="stylesheet"
@@ -14,14 +13,62 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
+      /* Ensure --brand is defined or use a solid color */
+      :root {
+        --brand: #3498db; /* Example brand color */
+      }
+
+      .icon {
+        position: relative;
+        display: inline-flex;
+        justify-content: space-between;
+        width: 50px; /* Increased size for visibility */
+        height: 50px; /* Increased size for visibility */
+        margin-right: 8px;
+      }
+
+      .icon > span {
+        width: 8px; /* Increased width for visibility */
+        height: 100%;
+        background-color: var(--brand);
+        border-radius: 3px;
+        transform-origin: bottom;
+        transition: opacity 0.3s ease-out;
+        animation: bounce 2.2s ease infinite alternate;
+        content: "";
+      }
+
+      .icon > span:nth-of-type(2) {
+        animation-delay: -2.2s;
+      }
+
+      .icon > span:nth-of-type(3) {
+        animation-delay: -3.7s;
+      }
+
+      @keyframes bounce {
+        10% {
+          transform: scaleY(0.3);
+        }
+        30% {
+          transform: scaleY(1);
+        }
+        60% {
+          transform: scaleY(0.5);
+        }
+        80% {
+          transform: scaleY(0.75);
+        }
+        100% {
+          transform: scaleY(0.6);
+        }
+      }
+
       body,
       html {
-        /* stretch weight and width to cover full screen */
         height: 100%;
         width: 100%;
-        /* remove default margin */
         margin: 0;
-        /* set to center both horizontally and vertically */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -29,6 +76,7 @@
         font-weight: 700;
         font-style: italic;
       }
+
       .container {
         display: grid;
         grid-template-columns: 1fr 3fr 1fr;
@@ -38,40 +86,65 @@
           ".  display  ."
           ". choices ."
           ". footer .";
-        /* take 90 percent of parent element  */
         width: 90%;
         height: 90%;
       }
+
       .menu {
         grid-area: menu123;
         color: rgb(5, 5, 5);
       }
+
       .roundnumber {
         grid-area: roundnumber;
         color: rgb(23, 233, 146);
         text-align: center;
+        font-size: 3.5rem;
       }
+
       .timer123 {
         grid-area: timer123;
         background-color: rgb(255, 251, 0);
         text-align: center;
       }
+
       .display {
         grid-area: display;
         background-color: rgb(5, 28, 241);
       }
+
       .choices {
         grid-area: choices;
         background-color: rgb(97, 248, 37);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        justify-items: center;
+        font-size: 1.5rem;
       }
+
+      .choices button {
+        padding: 10px;
+        width: 100%;
+        background-color: lightgrey;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .choices button:hover {
+        background-color: grey;
+        color: white;
+      }
+
       .footer {
         grid-area: footer;
         background-color: rgb(252, 5, 5);
         padding: 10px;
-        text-align: center; /* Ensures the text is centered within the flex item */
-        display: flex; /* Enables Flexbox */
-        justify-content: center; /* Centers content horizontally */
-        align-items: center; /* Centers content vertically */
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         font-size: 3.5rem;
         text-align: justify;
       }
@@ -84,43 +157,22 @@
         text-align: center;
         color: white;
       }
-      .choices {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        justify-items: center;
-        font-size: 1.5rem;
-      }
-      .choices button {
-        padding: 10px;
-        width: 100%;
-        background-color: lightgrey;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      .choices button:hover {
-        background-color: grey;
-        color: white;
-      }
+
       .modal-action {
         display: flex;
-        justify-content: center; /* Center horizontally */
-        gap: 1rem; /* Adjust space between buttons if needed */
+        justify-content: center;
+        gap: 1rem;
         text-align: center;
       }
-      /* Hide the modal checkbox, so it doesn't affect the layout */
+
       .modal-toggle {
         display: none;
       }
+
       .modal-box {
         text-align: center;
         font-size: 1.5rem;
       }
-      /* #footer{
-            text-align: center;
-            font-size: 2.5rem; 
-        } */
     </style>
   </head>
 
@@ -134,19 +186,72 @@
         <h3 class="text-lg font-bold" id="gamescore"></h3>
         <div class="modal-action flex space-x-4">
           <form action="/gamePage" method="get">
-            <form action="/gamePage" method="get">
-              <button type="submit" class="btn">Play Again</button>
-            </form>
+            <button type="submit" class="btn">Play Again</button>
           </form>
-          <!-- Play Again Button -->
-          <!-- Menu Button -->
           <a href="/" class="btn">Menu</a>
         </div>
       </div>
     </div>
 
     <div class="container">
-      <div class="menu">Menu</div>
+      <div class="menu">
+        <ul class="menu menu-horizontal bg-base-200 rounded-box mt-6">
+          <li>
+            <a class="tooltip" data-tip="Home">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="tooltip" data-tip="Details">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="tooltip" data-tip="Stats">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
       <div class="roundnumber" id="roundnumber"></div>
       <div class="timer123">
         <span id="timer123" class="countdown font-mono text-6xl">
@@ -154,7 +259,11 @@
         </span>
       </div>
       <div class="display">
-        <div class="song-animation">Song Image</div>
+        <div class="icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
         <div class="play-snippet">
           <audio id="audioPlayer" controls></audio>
         </div>

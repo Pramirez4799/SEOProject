@@ -233,7 +233,7 @@ function updateAnswer(value) {
   if (numOfSongs >= 10) {
     showModal();
     console.log(countdownTime);
-
+    clearInterval(timerInterval); // Stop the timer
     document.getElementById("gamescore").innerHTML =
       "Score: " + calculateScore();
   }
