@@ -4,7 +4,12 @@ let correctSong;
 const choicesArray = [];
 const songsArray = [];
 let roundNum = 0;
-
+let difficulty = 2;
+let totalRounds = 10;
+// Variables to keep track of the time
+let initialTime = 60;
+let countdownTime = 60; // Time in seconds
+let timerInterval;
 // Function to reset game data
 function resetGame() {
   numberOfSongsGuessed = 0;
@@ -42,10 +47,6 @@ songChoice1.addEventListener("click", handleSongChoiceClick0);
 songChoice2.addEventListener("click", handleSongChoiceClick1);
 songChoice3.addEventListener("click", handleSongChoiceClick2);
 songChoice4.addEventListener("click", handleSongChoiceClick3);
-
-// Variables to keep track of the time
-let countdownTime = 120; // Time in seconds
-let timerInterval;
 
 // Get playlistId from URL parameters and fetch songs
 // const queryParams = getQueryParams();
@@ -232,6 +233,9 @@ function updateAnswer(value) {
   if (numOfSongs >= 10) {
     showModal();
     console.log(countdownTime);
+
+    document.getElementById("gamescore").innerHTML =
+      "Score: " + calculateScore();
   }
 }
 
@@ -243,4 +247,17 @@ function handleTimeUp() {
 
 function showModal() {
   document.getElementById("my_modal_6").checked = true;
+}
+function calculateScore() {
+  let accuracyWeight = 0.6; // 60% weight for accuracy
+  let timeWeight = 0.3; // 30% weight for time
+  let difficultyWeight = 0.1; // 10% weight for difficulty
+
+  let accuracyScore =
+    (numberOfSongsGuessed / totalRounds) * 1000 * accuracyWeight;
+  let timeScore = (countdownTime / initialTime) * 1000 * timeWeight;
+  let difficultyScore = 100 * difficulty * difficultyWeight;
+
+  let score = accuracyScore + timeScore + difficultyScore;
+  return Math.round(score);
 }
