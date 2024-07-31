@@ -1,131 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Music Quiz</title>
     <!-- install daisyUI -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-            grid-template-rows: 1fr 2fr 2fr 1fr;
-            grid-template-areas: 
-                "menu123 roundnumber timer123"
-                ".  display  ."
-                ". choices ."
-                ". footer .";
-        }
-        .menu {
-            grid-area: menu123;
-            color: rgb(5, 5, 5);
-        }
-        .roundnumber{
-            grid-area: roundnumber;
-            color: rgb(23, 233, 146);
-            text-align: center;
-        }
-        .timer123 {
-            grid-area: timer123;
-            background-color: rgb(255, 251, 0);
-            text-align: center;
-        }
-        .display {
-            grid-area: display;
-            background-color: rgb(5, 28, 241);
-        }
-        .choices {
-            grid-area: choices;
-            background-color: rgb(97, 248, 37);
-        }
-        .footer {
-            grid-area: footer;
-            background-color: rgb(252, 5, 5);
-            padding: 10px;
-            text-align: center;
-        }
-        .play-snippet {
-            grid-column: 1 / span 3;
-            grid-row: 3;
-            background-color: lightcoral;
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-        .choices {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            justify-items: center;
-        }
-        .choices button {
-            padding: 10px;
-            width: 100%;
-            background-color: lightgrey;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .choices button:hover {
-            background-color: grey;
-            color: white;
-        }
-        .modal-action {
-            display: flex;
-            justify-content: center; /* Center horizontally */
-            gap: 1rem; /* Adjust space between buttons if needed */
-        }
-        /* Hide the modal checkbox, so it doesn't affect the layout */
-        .modal-toggle {
-            display: none;
-        }
-    </style>
-</head>
+      @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
-<body>
+      body,
+      html {
+        /* stretch weight and width to cover full screen */
+        height: 100%;
+        width: 100%;
+        /* remove default margin */
+        margin: 0;
+        /* set to center both horizontally and vertically */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Comic Neue", cursive;
+        font-weight: 700;
+        font-style: italic;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+        grid-template-rows: 1fr 2fr 2fr 1fr;
+        grid-template-areas:
+          "menu123 roundnumber timer123"
+          ".  display  ."
+          ". choices ."
+          ". footer .";
+        /* take 90 percent of parent element  */
+        width: 90%;
+        height: 90%;
+      }
+      .menu {
+        grid-area: menu123;
+        color: rgb(5, 5, 5);
+      }
+      .roundnumber {
+        grid-area: roundnumber;
+        color: rgb(23, 233, 146);
+        text-align: center;
+      }
+      .timer123 {
+        grid-area: timer123;
+        background-color: rgb(255, 251, 0);
+        text-align: center;
+      }
+      .display {
+        grid-area: display;
+        background-color: rgb(5, 28, 241);
+      }
+      .choices {
+        grid-area: choices;
+        background-color: rgb(97, 248, 37);
+      }
+      .footer {
+        grid-area: footer;
+        background-color: rgb(252, 5, 5);
+        padding: 10px;
+        text-align: center; /* Ensures the text is centered within the flex item */
+        display: flex; /* Enables Flexbox */
+        justify-content: center; /* Centers content horizontally */
+        align-items: center; /* Centers content vertically */
+        font-size: 3.5rem;
+        text-align: justify;
+      }
+
+      .play-snippet {
+        grid-column: 1 / span 3;
+        grid-row: 3;
+        background-color: lightcoral;
+        padding: 20px;
+        text-align: center;
+        color: white;
+      }
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        justify-items: center;
+        font-size: 1.5rem;
+      }
+      .choices button {
+        padding: 10px;
+        width: 100%;
+        background-color: lightgrey;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .choices button:hover {
+        background-color: grey;
+        color: white;
+      }
+      .modal-action {
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        gap: 1rem; /* Adjust space between buttons if needed */
+        text-align: center;
+      }
+      /* Hide the modal checkbox, so it doesn't affect the layout */
+      .modal-toggle {
+        display: none;
+      }
+      .modal-box {
+        text-align: center;
+        font-size: 1.5rem;
+      }
+      /* #footer{
+            text-align: center;
+            font-size: 2.5rem; 
+        } */
+    </style>
+  </head>
+
+  <body>
     <!-- Modal Structure -->
     <input type="checkbox" id="my_modal_6" class="modal-toggle" />
     <div class="modal" role="dialog">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">Game Over!</h3>
-            <p class="py-4">What would you like to do next?</p>
-            <div class="modal-action flex space-x-4">
-                <form action="/gamePage" method="get">
-                    <form action="/gamePage" method="get">
-                        <button type="submit" class="btn">Play Again</button>
-                    </form>
-                </form>
-                <!-- Play Again Button -->
-                <!-- Menu Button -->
-                <a href="/" class="btn">Menu</a>
-            </div>
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">Game Over!</h3>
+        <p class="py-4">What would you like to do next?</p>
+        <div class="modal-action flex space-x-4">
+          <form action="/gamePage" method="get">
+            <form action="/gamePage" method="get">
+              <button type="submit" class="btn">Play Again</button>
+            </form>
+          </form>
+          <!-- Play Again Button -->
+          <!-- Menu Button -->
+          <a href="/" class="btn">Menu</a>
         </div>
+      </div>
     </div>
 
     <div class="container">
-        <div class="menu">Menu</div>
-        <div class="roundnumber" id = "roundnumber"></div>
-        <div class="timer123">
-            <span id="timer123" class="countdown font-mono text-6xl">
-                <span style="--value:${counter};"></span>
-              </span>
+      <div class="menu">Menu</div>
+      <div class="roundnumber" id="roundnumber"></div>
+      <div class="timer123">
+        <span id="timer123" class="countdown font-mono text-6xl">
+          <span style="--value:${counter};"></span>
+        </span>
+      </div>
+      <div class="display">
+        <div class="song-animation">Song Image</div>
+        <div class="play-snippet">
+          <audio id="audioPlayer" controls></audio>
         </div>
-        <div class="display">
-            <div class="song-animation">Song Image</div>
-            <div class="play-snippet">
-                <audio id="audioPlayer" controls></audio>
-            </div>
-        </div>
-        <div class="choices">
-            <button id="song1">Song 1</button>
-            <button id="song2">Song 2</button>
-            <button id="song3">Song 3</button>
-            <button id="song4">Song 4</button>
-        </div>
-        <div class="footer" id="footer"></div>
+      </div>
+      <div class="choices">
+        <button id="song1">Song 1</button>
+        <button id="song2">Song 2</button>
+        <button id="song3">Song 3</button>
+        <button id="song4">Song 4</button>
+      </div>
+      <div class="footer" id="footer"></div>
     </div>
     <script src="static/game.js"></script>
-</body>
+  </body>
 </html>

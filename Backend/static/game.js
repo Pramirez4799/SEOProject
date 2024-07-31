@@ -3,7 +3,7 @@ let numOfSongs = 0;
 let correctSong;
 const choicesArray = [];
 const songsArray = []; 
-let roundNum = -1;
+let roundNum = 0;
 
 // Function to reset game data
 function resetGame() {
@@ -184,7 +184,9 @@ function loadSongsToPage() {
         playSong(correctSong.preview_url);
         numOfSongs++;
         roundNum++;
-        document.getElementById('roundnumber').innerHTML = roundNum;
+        if (roundNum < 11){
+            document.getElementById('roundnumber').innerHTML = roundNum;
+        }
     }
 }
 
