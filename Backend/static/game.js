@@ -261,3 +261,25 @@ function calculateScore() {
   let score = accuracyScore + timeScore + difficultyScore;
   return Math.round(score);
 }
+function updateScore(username, newScore) {
+  fetch("/update_score", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: username,
+      last_score: newScore,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.message); // Handle success message
+    })
+    .catch((error) => {
+      console.error("Error:", error); // Handle errors
+    });
+}
+
+// Example usage
+updateScore("player123", 1500);

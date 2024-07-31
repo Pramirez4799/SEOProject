@@ -21,8 +21,18 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    spotify_id = db.Column(db.String(50), unique=True, nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    highest_score = db.Column(db.Integer)
+    average_score = db.Column(db.Float)
+    accuracy = db.Column(db.Float)  # Percentage accuracy
+    games_played = db.Column(db.Integer)
+    
+    def __init__(self, username):
+        self.username = username
+        self.highest_score = 0
+        self.average_score = 0.0
+        self.accuracy = 0.0
+        self.games_played = 0
 @app.before_request
 def create_tables():
     # The following line will remove this handler, making it
@@ -36,7 +46,26 @@ def create_tables():
 @app.route('/')
 def home():
     return render_template('loginPage.html')
+# Route to go to leaderboard page 
+@app.route('/leaderboard')
+def goToleaderBoard():
+    return render_template('leaderBoard.html')
+# update stats for a user 
+@app.route('/update_score', methods=['POST'])
+def update_score():
+    data = request.json
+    username = data.get('username')
+    new_score = data.get('highest_score')
 
+    # Find user by username
+    user = User.query.filter_by(username=username).first()
+    if user:
+        #add new 
+        user.highest_score = new_score
+        db.session.commit()
+        return jsonify({'message': 'Stats updated successfully'}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 # Go to game page 
 @app.route('/gamePage')
 def goToGame():
@@ -141,7 +170,30 @@ def get_playlist_tracks(playlist_id):
             return jsonify({"error": "Failed to fetch playlist tracks"}), response.status_code
     else:
         return redirect(url_for('home'))
-
+@app.route('/update_metrics', methods=['POST'])
+def update_metrics():
+    data = request.json
+    username = data.get('username')
+    new_score = data.get('highest_score')
+    accuracy = data.get('accuracy')
+    games_played = data.get('games_played')
+    
+    # Find user by username
+    user = User.query.filter_by(username=username).first()
+    if user:
+        # Update metrics
+        if new_score > user.highest_score:
+            user.highest_score = new_score
+        
+        total_scores = user.average_score * user.games_played + new_score
+        user.games_played += 1
+        user.average_score = total_scores / user.games_played
+        user.accuracy = accuracy
+        
+        db.session.commit()
+        return jsonify({'message': 'Metrics updated successfully'}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 # Function to open a web browser
 # def open_browser():
 #     webbrowser.open_new_tab("http://127.0.0.1:5000/")
