@@ -108,6 +108,7 @@
         });
         }
 
+
         // Function to populate the options dropdown
         function populateDropdown(playlists) {
         const playlistSelect = document.getElementById('playlistSelect');
@@ -128,11 +129,6 @@
         // Call getPlaylists to fetch and display the playlists when the page loads
         getPlaylists();
 
-        // Function to get query parameters
-        function getQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            return Object.fromEntries(params.entries());
-        }
 
         // Function to get the selected difficulty
         function getSelectedDifficulty() {
@@ -143,9 +139,7 @@
                 return null;
             }
         }
-        // Get playlistId from URL parameters
-        const queryParams = getQueryParams();
-        const playlistId = queryParams.playlistId; // Store playlistId
+
 
         // Event listener for the button click
         document.getElementById('checkButton').addEventListener('click', () => {
@@ -157,49 +151,36 @@
             if (selectedDifficulty && enteredNumber && playlistSelected) {
                 console.log('Selected Difficulty:', selectedDifficulty);
                 console.log('Entered Number:', enteredNumber);
-                
+                validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
                 // You can now use the selectedDifficulty and enteredNumber variables as needed
             } else {
                 console.error('Please Choose all settings.');
             }
-            validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
+            
         });
 
         
-
         // Function to check if the settings are valid
         function validSettings(selectedDifficulty, enteredNumber, playlistId, selectedTrackCount) {
+            console.log(selectedTrackCount)
             if (selectedTrackCount < enteredNumber) {
                 console.error('Entered number is greater than the number of songs in the playlist.');
             } else {
                 console.log('Valid settings:', selectedDifficulty, enteredNumber, playlistId);
-                
+                handlePlayGameClick(selectedDifficulty, enteredNumber, playlistId)
             }
         }
 
         
-
-        // Fetch and display songs for the selected playlist
-        function fetchSongs(playlistId) {
-            return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.items) {
-                return data.items.length;
-            } else {
-                throw new Error('No songs found in this playlist.');
-            }
-        })
-                .catch(error => {
-                console.error('Error fetching playlist songs:', error);
-        });
-}
-
-        // Get playlistId from URL parameters and fetch son
+        function handlePlayGameClick(selectedDifficulty, enteredNumber, playlistId) {
+            
+            // Navigate to the game page with the playlist ID
+            const url = new URL('/gamePage', window.location.origin);
+            url.searchParams.append('selectedDifficulty', selectedDifficulty);
+            url.searchParams.append('emteredNumber', enteredNumber);
+            url.searchParams.append('playlistId', playlistId);
+            window.location.href = url;
+        }
     </script>
 </body>
 </html>
