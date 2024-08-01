@@ -26,15 +26,19 @@ class User(db.Model):
     ranking = db.Column(db.Integer)
     highest_score = db.Column(db.Integer, default=0)  # Default values for better initialization
     average_score = db.Column(db.Float, default=0.0)
+    correctGuesses = db.Column(db.Integer, default=0.0)
+    totalSongs = db.Column(db.Integer, default=0.0)
     accuracy = db.Column(db.Float, default=0.0)
     games_played = db.Column(db.Integer, default=0)
 
-    def __init__(self, spotify_id=None, ranking=None, highest_score=None, average_score=None, accuracy=None, games_played=None):
+    def __init__(self, spotify_id=None, ranking=None, highest_score=None, average_score=None, accuracy=None, games_played=None, totalSongs=None, correctGuesses=None):
         self.spotify_id = spotify_id
         self.ranking = ranking if highest_score is not None else 1
         self.highest_score = highest_score if highest_score is not None else 0
         self.average_score = average_score if average_score is not None else 0.0
         self.accuracy = accuracy if accuracy is not None else 0.0
+        self.totalSongs = totalSongs if totalSongs is not None else 0.0
+        self.correctGuesses = correctGuesses if correctGuesses is not None else 0.0
         self.games_played = games_played if games_played is not None else 0
 @app.before_request
 def create_tables():
@@ -163,7 +167,8 @@ def update_metrics():
     data = request.json
     spotify_id = data.get('spotify_id')
     new_score = data.get('last_score')
-    accuracy = data.get('accuracy')
+    totalSongs = data.get('totalSongs')
+    correctGuesses = data.get('correctGuesses')
     
     # Find user by username
     user = User.query.filter_by(spotify_id=spotify_id).first()
@@ -175,8 +180,13 @@ def update_metrics():
         total_scores = (user.average_score * user.games_played) + new_score
         user.games_played += 1
         user.average_score = total_scores / user.games_played
+        user.totalSongs = user.totalSongs + totalSongs
+        user.correctGuesses = user.correctGuesses + correctGuesses
         # TODO: fix the accuracy
-        user.accuracy = accuracy
+        if user.correctGuesses > 0:
+            user.accuracy = user.correctGuesses / user.totalSongs
+        else:
+            user.accuracy = 0  # or some default value
         
         db.session.commit()
         return jsonify({'message': 'Metrics updated successfully'}), 200

@@ -241,7 +241,8 @@ function updateAnswer(value) {
     updateScore(
       sessionStorage.getItem("userName"),
       calculateScore(),
-      numberOfSongsGuessed / totalRounds
+      totalRounds,
+      numberOfSongsGuessed
     );
   }
 }
@@ -256,7 +257,8 @@ function handleTimeUp() {
   updateScore(
     sessionStorage.getItem("userName"),
     calculateScore(),
-    numberOfSongsGuessed / totalRounds
+    totalRounds,
+    numberOfSongsGuessed
   );
 }
 
@@ -276,7 +278,7 @@ function calculateScore() {
   let score = accuracyScore + timeScore + difficultyScore;
   return Math.round(score);
 }
-function updateScore(username, newScore, percentage) {
+function updateScore(username, newScore, totalSongsPlayed, correct) {
   fetch("/update_metrics", {
     method: "POST",
     headers: {
@@ -285,7 +287,8 @@ function updateScore(username, newScore, percentage) {
     body: JSON.stringify({
       spotify_id: username,
       last_score: newScore,
-      accuracy: percentage,
+      totalSongs: totalSongsPlayed,
+      correctGuesses: correct,
     }),
   })
     .then((response) => response.json())
