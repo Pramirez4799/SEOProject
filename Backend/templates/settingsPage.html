@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
     <style>
       .difficulty-container {
           text-align: center;
@@ -51,6 +51,14 @@
   </style>
 </head>
 <body>
+    <div class="input-container">
+        <label for="playlistSelect">Select Playlist:</label>
+        <select id="playlistSelect" name="playlistSelect">
+            <option value="">--Select Playlist--</option>
+            <!-- Options will be populated here -->
+        </select>
+    </div>
+
   <label for="numberInput">How many songs? :</label>
 
   <input type="number" id="numberInput" name="numberInput" min="10" max="50" />
@@ -71,6 +79,55 @@
 
 
     <script>
+        function getPlaylists() {
+        // Fetch playlists from the user's Spotify account
+        fetch('/playlists')
+        .then(response => response.json())
+        .then(data => {
+            // Array to hold the filtered playlists
+            const filteredPlaylists = [];
+            
+            // Filter playlists with at least 10 tracks and add them to the array
+            if (data.items) {
+                data.items.forEach(playlist => {
+                    if (playlist.tracks.total >= 10) {
+                        filteredPlaylists.push({
+                            id: playlist.id,
+                            name: playlist.name,
+                            trackCount: playlist.tracks.total
+                        });
+                    }
+                });
+            }
+
+            // Populate the options dropdown with the filtered playlists
+            populateDropdown(filteredPlaylists);
+        })
+        .catch(error => {
+            console.error('Error fetching playlists:', error);
+        });
+        }
+
+        // Function to populate the options dropdown
+        function populateDropdown(playlists) {
+        const playlistSelect = document.getElementById('playlistSelect');
+    
+        // Clear any existing options (except the default one)
+        playlistSelect.innerHTML = '<option value="">--Select Playlist--</option>';
+    
+        // Add an option for each playlist in the array
+        playlists.forEach(playlist => {
+            const option = document.createElement('option');
+            option.value = playlist.id;
+            option.textContent = playlist.name;
+            option.dataset.trackCount = playlist.trackCount;
+            playlistSelect.appendChild(option);
+        });
+        }
+
+        // Call getPlaylists to fetch and display the playlists when the page loads
+        getPlaylists();
+
         // Function to get query parameters
         function getQueryParams() {
             const params = new URLSearchParams(window.location.search);
@@ -94,65 +151,55 @@
         document.getElementById('checkButton').addEventListener('click', () => {
             const selectedDifficulty = getSelectedDifficulty();
             const enteredNumber = document.getElementById('numberInput').value;
+            const playlistSelected = document.getElementById('playlistSelect').value;
+            const selectedTrackCount = playlistSelect.options[playlistSelect.selectedIndex].dataset.trackCount;
 
-            if (selectedDifficulty && enteredNumber) {
+            if (selectedDifficulty && enteredNumber && playlistSelected) {
                 console.log('Selected Difficulty:', selectedDifficulty);
                 console.log('Entered Number:', enteredNumber);
                 
                 // You can now use the selectedDifficulty and enteredNumber variables as needed
             } else {
-                console.error('Please select a difficulty and enter a number.');
+                console.error('Please Choose all settings.');
             }
-            validSettings(selectedDifficulty, enteredNumber, playlistId);
+            validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
         });
 
         
 
         // Function to check if the settings are valid
-        function validSettings(selectedDifficulty, enteredNumber, playlistId) {
-          getQueryParams();
-          fetchSongs(playlistId).then(songCount => {
-                if (songCount < enteredNumber) {
-                    console.error('Entered number is greater than the number of songs in the playlist.');
-                } else {
-                    console.log('Valid settings:', selectedDifficulty, enteredNumber, playlistId);
-                    // Continue with your game logic or whatever you need to do next
-                }
-            });
-
+        function validSettings(selectedDifficulty, enteredNumber, playlistId, selectedTrackCount) {
+            if (selectedTrackCount < enteredNumber) {
+                console.error('Entered number is greater than the number of songs in the playlist.');
+            } else {
+                console.log('Valid settings:', selectedDifficulty, enteredNumber, playlistId);
+                
+            }
         }
+
+        
 
         // Fetch and display songs for the selected playlist
         function fetchSongs(playlistId) {
-            fetch(`/playlist/${playlistId}/tracks`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Songs:', data); // Log songs to the console for now
-                    const songListElement = document.getElementById('songList');
-                    songListElement.innerHTML = '<h3>Playlist Songs:</h3>';
-                    if (data.items) {
-                        const ul = document.createElement('ul');
-                        data.items.forEach(item => {
-                            const li = document.createElement('li');
-                            li.textContent = `${item.track.name} by ${item.track.artists.map(artist => artist.name).join(', ')}`;
-                            ul.appendChild(li);
-                        });
-                        songListElement.appendChild(ul);
-                    } else {
-                        songListElement.innerHTML += '<p>No songs found in this playlist.</p>';
-                    }
-                })
+            return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.items) {
+                return data.items.length;
+            } else {
+                throw new Error('No songs found in this playlist.');
+            }
+        })
                 .catch(error => {
-                    console.error('Error fetching playlist songs:', error);
-                });
-        }
+                console.error('Error fetching playlist songs:', error);
+        });
+}
 
-        // Get playlistId from URL parameters and fetch songs
-        if (queryParams.playlistId) {
-            fetchSongs(queryParams.playlistId);
-        } else {
-            console.error('No playlistId found in URL parameters');
-        }
+        // Get playlistId from URL parameters and fetch son
     </script>
 </body>
 </html>
