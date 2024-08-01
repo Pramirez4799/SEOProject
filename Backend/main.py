@@ -182,7 +182,6 @@ def update_metrics():
         user.average_score = total_scores / user.games_played
         user.totalSongs = user.totalSongs + totalSongs
         user.correctGuesses = user.correctGuesses + correctGuesses
-        # TODO: fix the accuracy
         if user.correctGuesses > 0:
             user.accuracy = user.correctGuesses / user.totalSongs
         else:
