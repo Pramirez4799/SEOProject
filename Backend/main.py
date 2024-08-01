@@ -117,7 +117,7 @@ def callback():
         db.session.commit()
     
     session['user_id'] = user.id
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('goToSettings'))
 
 @app.route('/playlists')
 def get_user_playlists():

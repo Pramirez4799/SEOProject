@@ -176,10 +176,14 @@
             
             // Navigate to the game page with the playlist ID
             const url = new URL('/gamePage', window.location.origin);
-            url.searchParams.append('selectedDifficulty', selectedDifficulty);
-            url.searchParams.append('emteredNumber', enteredNumber);
-            url.searchParams.append('playlistId', playlistId);
+            sessionStorage.setItem("selectedDifficulty", selectedDifficulty);
+            sessionStorage.setItem("emteredNumber", enteredNumber);
+            sessionStorage.setItem("playlistId", playlistId);
             window.location.href = url;
+            // url.searchParams.append('selectedDifficulty', selectedDifficulty);
+            // url.searchParams.append('emteredNumber', enteredNumber);
+            // url.searchParams.append('playlistId', playlistId);
+            // window.location.href = url;
         }
     </script>
 </body>

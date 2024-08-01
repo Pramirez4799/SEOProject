@@ -1,19 +1,25 @@
 let numberOfSongsGuessed = 0;
-let numOfSongs = 0;
-let correctSong;
-const choicesArray = [];
-const songsArray = [];
+//current song postion
+let songCount = 0;
+// TODO: remove this variable and use another
+//green round number on display
 let roundNum = 0;
-let difficulty = 2;
-let totalRounds = 10;
+//correct song to be guessed
+let correctSong;
+//choices of songs
+const choicesArray = [];
+//storage of playlist songs
+const songsArray = [];
+let difficulty = 0;
+let totalRounds = 0;
 // Variables to keep track of the time
-let initialTime = 60;
-let countdownTime = 60; // Time in seconds
+let initialTime = null;
+let countdownTime = null; // Time in seconds
 let timerInterval;
 // Function to reset game data
 function resetGame() {
   numberOfSongsGuessed = 0;
-  numOfSongs = 0;
+  songCount = 0;
   correctSong = null;
   choicesArray.length = 0;
   songsArray.length = 0; // Clear songsArray
@@ -58,12 +64,34 @@ initializePage();
 
 // Functions below
 
+// TODO: add this to getVariablesFromSettings function
 function getPlaylistId() {
   return sessionStorage.getItem("playlistId");
 }
-
+function getDifficulty() {
+  return sessionStorage.getItem("selectedDifficulty");
+}
+function getTotalSongs() {
+  return sessionStorage.getItem("emteredNumber");
+}
 async function initializePage() {
   const playlistId = getPlaylistId();
+  totalRounds = getTotalSongs();
+  //assign difficulty
+  let diff = getDifficulty();
+  if (diff == "easy") {
+    difficulty = 1;
+    initialTime = 30 * totalRounds;
+    countdownTime = initialTime;
+  } else if (diff == "medium") {
+    difficulty = 1.5;
+    initialTime = 15 * totalRounds;
+    countdownTime = initialTime;
+  } else if (diff == "hard") {
+    difficulty = 2;
+    initialTime = 6 * totalRounds;
+    countdownTime = initialTime;
+  }
   await fetchSongs(playlistId);
   loadSongsToPage();
 }
@@ -139,7 +167,7 @@ function getQueryParams() {
 
 function loadSongsToPage() {
   // Only quiz up to 10 songs
-  if (numOfSongs < 11) {
+  if (songCount < totalRounds) {
     // Log songs to the console
     console.log("Songs:", songsArray);
     console.log(numberOfSongsGuessed);
@@ -181,9 +209,10 @@ function loadSongsToPage() {
     // Set the audio source but do not play automatically
     playSong(correctSong.preview_url);
 
-    numOfSongs++;
+    songCount++;
     roundNum++;
-    if (roundNum < 11) {
+    //display to user current round number
+    if (roundNum <= totalRounds) {
       document.getElementById("roundnumber").innerHTML = roundNum;
     }
   }
@@ -230,7 +259,7 @@ function updateAnswer(value) {
   }
 
   // Check if 10 songs have been guessed
-  if (numOfSongs >= 10) {
+  if (songCount >= totalRounds) {
     showModal();
     console.log(countdownTime);
     clearInterval(timerInterval); // Stop the timer
