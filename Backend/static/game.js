@@ -234,8 +234,15 @@ function updateAnswer(value) {
     showModal();
     console.log(countdownTime);
     clearInterval(timerInterval); // Stop the timer
+    //update score for html
     document.getElementById("gamescore").innerHTML =
       "Score: " + calculateScore();
+    // update database
+    updateScore(
+      sessionStorage.getItem("userName"),
+      calculateScore(),
+      numberOfSongsGuessed / totalRounds
+    );
   }
 }
 
@@ -243,6 +250,14 @@ function updateAnswer(value) {
 function handleTimeUp() {
   console.log("Time is up!");
   showModal();
+  //update score for html
+  document.getElementById("gamescore").innerHTML = "Score: " + calculateScore();
+  // update database
+  updateScore(
+    sessionStorage.getItem("userName"),
+    calculateScore(),
+    numberOfSongsGuessed / totalRounds
+  );
 }
 
 function showModal() {
@@ -261,15 +276,16 @@ function calculateScore() {
   let score = accuracyScore + timeScore + difficultyScore;
   return Math.round(score);
 }
-function updateScore(username, newScore) {
-  fetch("/update_score", {
+function updateScore(username, newScore, percentage) {
+  fetch("/update_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: username,
+      spotify_id: username,
       last_score: newScore,
+      accuracy: percentage,
     }),
   })
     .then((response) => response.json())
@@ -280,6 +296,3 @@ function updateScore(username, newScore) {
       console.error("Error:", error); // Handle errors
     });
 }
-
-// Example usage
-updateScore("player123", 1500);

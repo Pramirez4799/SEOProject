@@ -5,6 +5,7 @@ import os
 import webbrowser
 from threading import Timer
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import null
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Instance of flask application
@@ -21,18 +22,20 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    highest_score = db.Column(db.Integer)
-    average_score = db.Column(db.Float)
-    accuracy = db.Column(db.Float)  # Percentage accuracy
-    games_played = db.Column(db.Integer)
-    
-    def __init__(self, username):
-        self.username = username
-        self.highest_score = 0
-        self.average_score = 0.0
-        self.accuracy = 0.0
-        self.games_played = 0
+    spotify_id = db.Column(db.String(50), unique=True, nullable=False)
+    ranking = db.Column(db.Integer)
+    highest_score = db.Column(db.Integer, default=0)  # Default values for better initialization
+    average_score = db.Column(db.Float, default=0.0)
+    accuracy = db.Column(db.Float, default=0.0)
+    games_played = db.Column(db.Integer, default=0)
+
+    def __init__(self, spotify_id=None, ranking=None, highest_score=None, average_score=None, accuracy=None, games_played=None):
+        self.spotify_id = spotify_id
+        self.ranking = ranking if highest_score is not None else 1
+        self.highest_score = highest_score if highest_score is not None else 0
+        self.average_score = average_score if average_score is not None else 0.0
+        self.accuracy = accuracy if accuracy is not None else 0.0
+        self.games_played = games_played if games_played is not None else 0
 @app.before_request
 def create_tables():
     # The following line will remove this handler, making it
@@ -50,22 +53,7 @@ def home():
 @app.route('/leaderboard')
 def goToleaderBoard():
     return render_template('leaderBoard.html')
-# update stats for a user 
-@app.route('/update_score', methods=['POST'])
-def update_score():
-    data = request.json
-    username = data.get('username')
-    new_score = data.get('highest_score')
 
-    # Find user by username
-    user = User.query.filter_by(username=username).first()
-    if user:
-        #add new 
-        user.highest_score = new_score
-        db.session.commit()
-        return jsonify({'message': 'Stats updated successfully'}), 200
-    else:
-        return jsonify({'message': 'User not found'}), 404
 # Go to game page 
 @app.route('/gamePage')
 def goToGame():
@@ -111,12 +99,11 @@ def callback():
     
     # Store user information in the database
     spotify_id = user_info['id']
-    username = user_info['display_name'] or user_info['id']  # Fallback to user ID if display name is not available
     
     # Check if the user already exists
     user = User.query.filter_by(spotify_id=spotify_id).first()
     if not user:
-        user = User(spotify_id=spotify_id, username=username)
+        user = User(spotify_id=spotify_id)
         db.session.add(user)
         db.session.commit()
     
@@ -170,33 +157,31 @@ def get_playlist_tracks(playlist_id):
             return jsonify({"error": "Failed to fetch playlist tracks"}), response.status_code
     else:
         return redirect(url_for('home'))
+#update sql database 
 @app.route('/update_metrics', methods=['POST'])
 def update_metrics():
     data = request.json
-    username = data.get('username')
-    new_score = data.get('highest_score')
+    spotify_id = data.get('spotify_id')
+    new_score = data.get('last_score')
     accuracy = data.get('accuracy')
-    games_played = data.get('games_played')
     
     # Find user by username
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(spotify_id=spotify_id).first()
     if user:
         # Update metrics
-        if new_score > user.highest_score:
+        if user.highest_score is None or new_score > user.highest_score:
             user.highest_score = new_score
         
-        total_scores = user.average_score * user.games_played + new_score
+        total_scores = (user.average_score * user.games_played) + new_score
         user.games_played += 1
         user.average_score = total_scores / user.games_played
+        # TODO: fix the accuracy
         user.accuracy = accuracy
         
         db.session.commit()
         return jsonify({'message': 'Metrics updated successfully'}), 200
     else:
         return jsonify({'message': 'User not found'}), 404
-# Function to open a web browser
-# def open_browser():
-#     webbrowser.open_new_tab("http://127.0.0.1:5000/")
 
 if __name__ == '__main__':
     # Timer(1, open_browser).start()
