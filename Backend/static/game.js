@@ -76,7 +76,8 @@ function getTotalSongs() {
 }
 async function initializePage() {
   const playlistId = getPlaylistId();
-  totalRounds = getTotalSongs();
+  totalRounds = parseInt(getTotalSongs(), 10);
+
   //assign difficulty
   let diff = getDifficulty();
   if (diff == "easy") {
@@ -268,7 +269,7 @@ function updateAnswer(value) {
       "Score: " + calculateScore();
     // update database
     updateScore(
-      sessionStorage.getItem("userName"),
+      sessionStorage.getItem("spotifyId"),
       calculateScore(),
       totalRounds,
       numberOfSongsGuessed
@@ -284,7 +285,7 @@ function handleTimeUp() {
   document.getElementById("gamescore").innerHTML = "Score: " + calculateScore();
   // update database
   updateScore(
-    sessionStorage.getItem("userName"),
+    sessionStorage.getItem("spotifyId"),
     calculateScore(),
     totalRounds,
     numberOfSongsGuessed

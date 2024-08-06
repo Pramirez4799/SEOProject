@@ -14,7 +14,8 @@ app = Flask(__name__)
 app.config['SPOTIFY_CLIENT_ID'] = '7fa25326cd8a4540ab9801dd5d4e3118'
 app.config['SPOTIFY_CLIENT_SECRET'] = '0fd7a582ec834c8c94d2433331d07bfe'
 app.config['SPOTIFY_REDIRECT_URI'] = 'http://localhost:5000/callback'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/spotifyGame'  # Use MySQL
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/spotifyGame'  # Use MySQL
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Abc123!%40@127.0.0.1:3306/spotifyGame' # Use MySQL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.urandom(24)  # Add a secret key for session management
 
@@ -63,10 +64,13 @@ def goToleaderBoard():
 def goToGame():
     return render_template('postGamePage.html')
 
-#go to settings page 
-@app.route('/settingsPage')
+@app.route('/settings')
 def goToSettings():
-    return render_template('settingsPage.html')
+    # Retrieve Spotify ID from the session
+    spotify_id = session.get('spotify_id', 'Unknown')
+    
+    # Use spotify_id as needed
+    return render_template('settingsPage.html', spotify_id=spotify_id)
 
 #route to have user login to spotify account 
 @app.route('/login')
@@ -104,11 +108,13 @@ def callback():
         "Authorization": f"Bearer {access_token}"
     }
     api_response = requests.get(api_url, headers=headers)
+    #get all of user info
     user_info = api_response.json()
     
-    # Store user information in the database
+    # get spotify id from user_info
     spotify_id = user_info['id']
-    
+     # Store Spotify ID in the session
+    session['spotify_id'] = spotify_id
     # Check if the user already exists
     user = User.query.filter_by(spotify_id=spotify_id).first()
     if not user:
@@ -116,6 +122,7 @@ def callback():
         db.session.add(user)
         db.session.commit()
     
+    # Store the username
     session['user_id'] = user.id
     return redirect(url_for('goToSettings'))
 

@@ -79,6 +79,7 @@
 
 
     <script>
+        sessionStorage.setItem("spotifyId", "{{ spotify_id }}");
         function getPlaylists() {
         // Fetch playlists from the user's Spotify account
         fetch('/playlists')
@@ -142,22 +143,40 @@
 
 
         // Event listener for the button click
-        document.getElementById('checkButton').addEventListener('click', () => {
-            const selectedDifficulty = getSelectedDifficulty();
-            const enteredNumber = document.getElementById('numberInput').value;
-            const playlistSelected = document.getElementById('playlistSelect').value;
-            const selectedTrackCount = playlistSelect.options[playlistSelect.selectedIndex].dataset.trackCount;
+// Event listener for the button click
+document.getElementById('checkButton').addEventListener('click', () => {
+    const selectedDifficulty = getSelectedDifficulty();
+    const enteredNumberInput = document.getElementById('numberInput').value;
+    const enteredNumber = parseInt(enteredNumberInput, 10); // Convert to integer with base 10
+    const playlistSelect = document.getElementById('playlistSelect');
+    const playlistSelected = playlistSelect.value;
+    const selectedTrackCount = playlistSelect.options[playlistSelect.selectedIndex].dataset.trackCount;
 
-            if (selectedDifficulty && enteredNumber && playlistSelected) {
-                console.log('Selected Difficulty:', selectedDifficulty);
-                console.log('Entered Number:', enteredNumber);
-                validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
-                // You can now use the selectedDifficulty and enteredNumber variables as needed
-            } else {
-                console.error('Please Choose all settings.');
-            }
-            
-        });
+    // Validate enteredNumber
+    if (isNaN(enteredNumber)) {
+        console.error('Entered number is not a valid integer.');
+        alert('Please enter a valid number of songs.');
+        return;
+    }
+
+    // Additional range validation if needed
+    if (enteredNumber < 10 || enteredNumber > 50) {
+        console.error('Entered number is out of the valid range (10-50).');
+        alert('Please enter a number between 10 and 50.');
+        return;
+    }
+
+    if (selectedDifficulty && playlistSelected) {
+        console.log('Selected Difficulty:', selectedDifficulty);
+        console.log('Entered Number:', enteredNumber);
+        console.log('Type of enteredNumber:', typeof enteredNumber);
+        validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
+        // You can now use the selectedDifficulty and enteredNumber variables as needed
+    } else {
+        console.error('Please choose all settings.');
+        alert('Please select a difficulty and a playlist.');
+    }
+});
 
         
         // Function to check if the settings are valid
