@@ -23,24 +23,22 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    spotify_id = db.Column(db.String(50), unique=True, nullable=False)
-    ranking = db.Column(db.Integer)
-    highest_score = db.Column(db.Integer, default=0)  # Default values for better initialization
+    spotify_id = db.Column(db.String(50), nullable=False)
+    highest_score = db.Column(db.Integer, default=0)
     average_score = db.Column(db.Float, default=0.0)
-    correctGuesses = db.Column(db.Integer, default=0.0)
-    totalSongs = db.Column(db.Integer, default=0.0)
+    correctGuesses = db.Column(db.Integer, default=0)
+    totalSongs = db.Column(db.Integer, default=0)
     accuracy = db.Column(db.Float, default=0.0)
     games_played = db.Column(db.Integer, default=0)
 
-    def __init__(self, spotify_id=None, ranking=None, highest_score=None, average_score=None, accuracy=None, games_played=None, totalSongs=None, correctGuesses=None):
+    def __init__(self, spotify_id, highest_score=0, average_score=0.0, accuracy=0.0, games_played=0, totalSongs=0, correctGuesses=0):
         self.spotify_id = spotify_id
-        self.ranking = ranking if highest_score is not None else 1
-        self.highest_score = highest_score if highest_score is not None else 0
-        self.average_score = average_score if average_score is not None else 0.0
-        self.accuracy = accuracy if accuracy is not None else 0.0
-        self.totalSongs = totalSongs if totalSongs is not None else 0.0
-        self.correctGuesses = correctGuesses if correctGuesses is not None else 0.0
-        self.games_played = games_played if games_played is not None else 0
+        self.highest_score = highest_score
+        self.average_score = average_score
+        self.accuracy = accuracy
+        self.games_played = games_played
+        self.totalSongs = totalSongs
+        self.correctGuesses = correctGuesses
 @app.before_request
 def create_tables():
     # The following line will remove this handler, making it
@@ -203,6 +201,57 @@ def update_metrics():
         return jsonify({'message': 'Metrics updated successfully'}), 200
     else:
         return jsonify({'message': 'User not found'}), 404
+
+# POST route to add a new user
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    try:
+        # Parse JSON data from request
+        data = request.json
+        spotify_id = data.get('spotify_id')
+
+        # Check if the Spotify ID is provided
+        if not spotify_id:
+            return jsonify({'message': 'Spotify ID is required'}), 400
+
+        # Create a new user instance
+        new_user = User(spotify_id=spotify_id)
+
+        # Add the new user to the session and commit to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'message': 'User added successfully'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    try:
+        # Query the database and order users by their highest score in descending order
+        users = User.query.order_by(User.highest_score.desc()).all()
+
+        # Prepare the user data for JSON response with dynamic ranking
+        user_data = [
+            {
+                "spotify_id": user.spotify_id,
+                "ranking": index + 1,  # Calculate ranking based on index after sorting
+                "highest_score": user.highest_score,
+                "average_score": user.average_score,
+                "accuracy": user.accuracy * 100,  # Convert accuracy to percentage
+                "games_played": user.games_played,
+                "total_songs": user.totalSongs,
+                "correct_guesses": user.correctGuesses
+            }
+            for index, user in enumerate(users)
+        ]
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     # Timer(1, open_browser).start()
