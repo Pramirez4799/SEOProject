@@ -61,7 +61,13 @@ def goToleaderBoard():
 @app.route('/gamePage')
 def goToGame():
     return render_template('postGamePage.html')
-
+@app.route('/logout')
+def logout():
+    # Clear the session data
+    session.pop('spotify_token', None)
+    session.pop('user_info', None)
+    # Redirect to the login page
+    return render_template('loginPage.html')
 @app.route('/settings')
 def goToSettings():
     # Retrieve Spotify ID from the session
