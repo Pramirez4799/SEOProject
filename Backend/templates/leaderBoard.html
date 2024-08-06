@@ -101,21 +101,20 @@
       .leaderboard-results {
         text-align: left;
         border-collapse: collapse;
+        width: 100%;
       }
       .leaderboard-results thead th {
-        padding: 25px;
+        padding: 15px;
         color: #747474;
         font-size: 14px;
         font-weight: bold;
+        border-bottom: 2px solid #686ef9;
       }
       .leaderboard-results tbody td {
-        padding: 15px 25px;
+        padding: 15px;
         background: #1a1a1a;
         font-size: 16px;
         border-bottom: 5px solid #232323;
-      }
-      .leaderboard-results tbody td:nth-of-type(7) {
-        font-weight: bold;
       }
       .leaderboard-results tbody tr:hover td {
         background: #1d1d1d;
@@ -155,107 +154,77 @@
               type="text"
               id="search-leaderboard"
               class="live-search-box"
-              placeholder="Search Team, Player..."
+              placeholder="Search Player..."
             />
           </div>
         </nav>
         <table id="rankings" class="leaderboard-results" width="100%">
           <thead>
             <tr>
-              <th>Ranking:</th>
-              <th>Username:</th>
-              <th>Highest Score:</th>
-              <th>Average Score:</th>
-              <th>Accuracy:</th>
-              <th>Games Played:</th>
+              <th>Ranking</th>
+              <th>Username</th>
+              <th>Highest Score</th>
+              <th>Average Score</th>
+              <th>Accuracy (%)</th>
+              <th>Games Played</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Load SCRIMcom Leaderboard Ranings -->
+            <!-- User data will be dynamically inserted here -->
           </tbody>
         </table>
       </section>
     </div>
 
-    <!-- JavaScript -->
     <script>
-      // Example leaderboard data
-      const leaderboardData = [
-        {
-          spotify_id: "ramirezmlg13",
-          ranking: 1,
-          highest_score: 479,
-          average_score: 226.333,
-          accuracy: 0.647059,
-          games_played: 3,
-        },
-        {
-          spotify_id: "user123",
-          ranking: 2,
-          highest_score: 450,
-          average_score: 220.667,
-          accuracy: 0.6,
-          games_played: 3,
-        },
-        {
-          spotify_id: "user456",
-          ranking: 3,
-          highest_score: 430,
-          average_score: 215.5,
-          accuracy: 0.58,
-          games_played: 4,
-        },
-        // Add more test data as needed
-      ];
+      // Fetch user data from the server
+      async function fetchUsers() {
+        try {
+          const response = await fetch("/users");
+          const users = await response.json();
+          populateLeaderboard(users);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
 
-      const rankingsBody = document.querySelector("#rankings > tbody");
+      // Populate the leaderboard with user data
+      function populateLeaderboard(users) {
+        const tbody = document.querySelector("#rankings tbody");
+        tbody.innerHTML = ""; // Clear existing content
 
-      function populateRankings(data) {
-        rankingsBody.innerHTML = ""; // Clear previous entries
-        data.forEach((player, index) => {
-          const tr = document.createElement("tr");
-          tr.classList.add(
-            "hover:bg-gray-50",
-            "transition",
-            "duration-150",
-            "ease-in-out"
-          );
-
-          tr.innerHTML = `
-                    <td class="p-4 text-center">${player.ranking}</td>
-                    <td class="p-4 text-center">${player.spotify_id}</td>
-                    <td class="p-4 text-center">${player.highest_score}</td>
-                    <td class="p-4 text-center">${player.average_score.toFixed(
-                      2
-                    )}</td>
-                    <td class="p-4 text-center">${(
-                      player.accuracy * 100
-                    ).toFixed(2)}</td>
-                    <td class="p-4 text-center">${player.games_played}</td>
-                `;
-
-          rankingsBody.appendChild(tr);
+        users.forEach((user) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${user.ranking}</td>
+            <td>${user.spotify_id}</td>
+            <td>${user.highest_score}</td>
+            <td>${user.average_score.toFixed(2)}</td>
+            <td>${user.accuracy.toFixed(2)}%</td>
+            <td>${user.games_played}</td>
+          `;
+          tbody.appendChild(row);
         });
       }
 
-      // Filter function for search input
-      function filterLeaderboard() {
-        const searchValue = document
-          .getElementById("search-leaderboard")
-          .value.toLowerCase();
-        const filteredData = leaderboardData.filter((player) => {
-          return player.spotify_id.toLowerCase().includes(searchValue);
-        });
-        populateRankings(filteredData);
-      }
-
+      // Initialize and fetch users when the document is loaded
       document.addEventListener("DOMContentLoaded", () => {
-        populateRankings(leaderboardData); // Initial load
-      });
+        fetchUsers();
 
-      document
-        .getElementById("search-leaderboard")
-        .addEventListener("input", filterLeaderboard);
+        // Search functionality
+        const searchInput = document.getElementById("search-leaderboard");
+        searchInput.addEventListener("input", function () {
+          const filter = searchInput.value.toLowerCase();
+          const rows = document.querySelectorAll("#rankings tbody tr");
+
+          rows.forEach((row) => {
+            const username = row
+              .querySelector("td:nth-child(2)")
+              .textContent.toLowerCase();
+            row.style.display = username.includes(filter) ? "" : "none";
+          });
+        });
+      });
     </script>
   </body>
 </html>

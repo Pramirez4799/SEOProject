@@ -13,6 +13,9 @@
     <p>ID: {{ user_info.id }}</p>
     <h2>Playlists</h2>
     <button onclick="getPlaylists()">Get Playlists</button>
+    <form action="/leaderboard" method="get">
+      <button type="submit">leaderboard</button>
+    </form>
     <ul id="playlists"></ul>
 
     <script>
