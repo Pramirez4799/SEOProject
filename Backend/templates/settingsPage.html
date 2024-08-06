@@ -1,212 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings</title>
     <!-- <link rel="stylesheet" href="styles.css"> -->
     <style>
-      .difficulty-container {
-          text-align: center;
-          font-family: Arial, sans-serif;
+      .container {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+        grid-template-areas:
+          "number"
+          "playlist"
+          "diff"
+          "options"
+          "startBot";
+        width: 90%;
+        height: 90%;
+      }
+
+      .number {
+        grid-area: number;
+        background-color: rgb(255, 251, 0);
+        text-align: center;
+      }
+      .playlist {
+        grid-area: playlist;
+        background-color: rgb(19, 233, 105);
+        text-align: center;
+      }
+      .diff {
+        grid-area: diff;
+        background-color: rgb(227, 16, 174);
+        text-align: center;
       }
       .options {
-          display: flex;
-          justify-content: center;
-          gap: 20px;
-          margin-top: 10px;
+        grid-area: options;
+        background-color: rgb(72, 18, 248);
+        text-align: center;
+      }
+
+      .startBot {
+        grid-area: startBot;
+        background-color: rgb(255, 0, 0);
+        text-align: center;
+      }
+
+      /* .difficulty-container {
+          text-align: center;
+          font-family: Arial, sans-serif;
+      } */
+      .options {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 10px;
       }
       .option-label {
-          display: block;
-          width: 50px;
-          height: 50px;
-          background-color: #ccc;
-          border-radius: 5px;
-          line-height: 50px;
-          text-align: center;
-          cursor: pointer;
+        display: block;
+        width: 50px;
+        height: 50px;
+        background-color: #ccc;
+        border-radius: 5px;
+        line-height: 50px;
+        text-align: center;
+        cursor: pointer;
       }
       .option-input {
-          display: none;
+        display: none;
       }
       .option-input:checked + .option-label {
-          background-color: #666;
-          color: white;
+        background-color: #666;
+        color: white;
       }
       .input-container {
-          margin-top: 20px;
+        margin-top: 20px;
       }
       .input-container input {
-          padding: 5px;
-          font-size: 16px;
+        padding: 5px;
+        font-size: 16px;
       }
       .input-container button {
-          padding: 5px 10px;
-          font-size: 16px;
-          cursor: pointer;
+        padding: 5px 10px;
+        font-size: 16px;
+        cursor: pointer;
       }
       #songList {
-          margin-top: 20px;
+        margin-top: 20px;
       }
-  </style>
-</head>
-<body>
-    <div class="input-container">
+    </style>
+  </head>
+  <body>
+    <div class="number">
+      <label for="numberInput">How many songs? :</label>
+
+      <input
+        type="number"
+        id="numberInput"
+        name="numberInput"
+        min="10"
+        max="50"
+      />
+    </div>
+    <div class="playlist">
+      <div class="input-container">
         <label for="playlistSelect">Select Playlist:</label>
         <select id="playlistSelect" name="playlistSelect">
-            <option value="">--Select Playlist--</option>
-            <!-- Options will be populated here -->
+          <option value="">--Select Playlist--</option>
+          <!-- Options will be populated here -->
         </select>
+      </div>
     </div>
-    <form action="/leaderboard" method="get">
-        <button type="submit">leaderboard</button>
-      </form>
-
-  <label for="numberInput">How many songs? :</label>
-
-  <input type="number" id="numberInput" name="numberInput" min="10" max="50" />
-
-  <div class="difficulty-container">
-    <h2>Difficulty</h2>
+    <div class="diff">
+      <h2>Difficulty</h2>
+    </div>
     <div class="options">
-        <input type="radio" id="easy" name="difficulty" value="easy" class="option-input">
+      <div class="options">
+        <input
+          type="radio"
+          id="easy"
+          name="difficulty"
+          value="easy"
+          class="option-input"
+        />
         <label for="easy" class="option-label">Easy</label>
-        
-        <input type="radio" id="medium" name="difficulty" value="medium" class="option-input">
-        <label for="medium" class="option-label">Medium</label>
-        
-        <input type="radio" id="hard" name="difficulty" value="hard" class="option-input">
-        <label for="hard" class="option-label">Hard</label>
-    </div>
-    <button id="checkButton">Play Game</button>
 
+        <input
+          type="radio"
+          id="medium"
+          name="difficulty"
+          value="medium"
+          class="option-input"
+        />
+        <label for="medium" class="option-label">Medium</label>
+
+        <input
+          type="radio"
+          id="hard"
+          name="difficulty"
+          value="hard"
+          class="option-input"
+        />
+        <label for="hard" class="option-label">Hard</label>
+      </div>
+    </div>
+    <div class="startBot">
+      <button id="checkButton">Play Game</button>
+    </div>
 
     <script>
-        sessionStorage.setItem("spotifyId", "{{ spotify_id }}");
-        function getPlaylists() {
+      sessionStorage.setItem("spotifyId", "{{ spotify_id }}");
+      function getPlaylists() {
         // Fetch playlists from the user's Spotify account
-        fetch('/playlists')
-        .then(response => response.json())
-        .then(data => {
+        fetch("/playlists")
+          .then((response) => response.json())
+          .then((data) => {
             // Array to hold the filtered playlists
             const filteredPlaylists = [];
-            
+
             // Filter playlists with at least 10 tracks and add them to the array
             if (data.items) {
-                data.items.forEach(playlist => {
-                    if (playlist.tracks.total >= 10) {
-                        filteredPlaylists.push({
-                            id: playlist.id,
-                            name: playlist.name,
-                            trackCount: playlist.tracks.total
-                        });
-                    }
-                });
+              data.items.forEach((playlist) => {
+                if (playlist.tracks.total >= 10) {
+                  filteredPlaylists.push({
+                    id: playlist.id,
+                    name: playlist.name,
+                    trackCount: playlist.tracks.total,
+                  });
+                }
+              });
             }
 
             // Populate the options dropdown with the filtered playlists
             populateDropdown(filteredPlaylists);
-        })
-        .catch(error => {
-            console.error('Error fetching playlists:', error);
-        });
-        }
+          })
+          .catch((error) => {
+            console.error("Error fetching playlists:", error);
+          });
+      }
 
+      // Function to populate the options dropdown
+      function populateDropdown(playlists) {
+        const playlistSelect = document.getElementById("playlistSelect");
 
-        // Function to populate the options dropdown
-        function populateDropdown(playlists) {
-        const playlistSelect = document.getElementById('playlistSelect');
-    
         // Clear any existing options (except the default one)
-        playlistSelect.innerHTML = '<option value="">--Select Playlist--</option>';
-    
+        playlistSelect.innerHTML =
+          '<option value="">--Select Playlist--</option>';
+
         // Add an option for each playlist in the array
-        playlists.forEach(playlist => {
-            const option = document.createElement('option');
-            option.value = playlist.id;
-            option.textContent = playlist.name;
-            option.dataset.trackCount = playlist.trackCount;
-            playlistSelect.appendChild(option);
+        playlists.forEach((playlist) => {
+          const option = document.createElement("option");
+          option.value = playlist.id;
+          option.textContent = playlist.name;
+          option.dataset.trackCount = playlist.trackCount;
+          playlistSelect.appendChild(option);
         });
+      }
+
+      // Call getPlaylists to fetch and display the playlists when the page loads
+      getPlaylists();
+
+      // Function to get the selected difficulty
+      function getSelectedDifficulty() {
+        const selectedOption = document.querySelector(
+          'input[name="difficulty"]:checked'
+        );
+        if (selectedOption) {
+          return selectedOption.value;
+        } else {
+          return null;
+        }
+      }
+
+      // Event listener for the button click
+      // Event listener for the button click
+      document.getElementById("checkButton").addEventListener("click", () => {
+        const selectedDifficulty = getSelectedDifficulty();
+        const enteredNumberInput = document.getElementById("numberInput").value;
+        const enteredNumber = parseInt(enteredNumberInput, 10); // Convert to integer with base 10
+        const playlistSelect = document.getElementById("playlistSelect");
+        const playlistSelected = playlistSelect.value;
+        const selectedTrackCount =
+          playlistSelect.options[playlistSelect.selectedIndex].dataset
+            .trackCount;
+
+        // Validate enteredNumber
+        if (isNaN(enteredNumber)) {
+          console.error("Entered number is not a valid integer.");
+          alert("Please enter a valid number of songs.");
+          return;
         }
 
-        // Call getPlaylists to fetch and display the playlists when the page loads
-        getPlaylists();
-
-
-        // Function to get the selected difficulty
-        function getSelectedDifficulty() {
-            const selectedOption = document.querySelector('input[name="difficulty"]:checked');
-            if (selectedOption) {
-                return selectedOption.value;
-            } else {
-                return null;
-            }
+        // Additional range validation if needed
+        if (enteredNumber < 10 || enteredNumber > 50) {
+          console.error("Entered number is out of the valid range (10-50).");
+          alert("Please enter a number between 10 and 50.");
+          return;
         }
 
-
-        // Event listener for the button click
-// Event listener for the button click
-document.getElementById('checkButton').addEventListener('click', () => {
-    const selectedDifficulty = getSelectedDifficulty();
-    const enteredNumberInput = document.getElementById('numberInput').value;
-    const enteredNumber = parseInt(enteredNumberInput, 10); // Convert to integer with base 10
-    const playlistSelect = document.getElementById('playlistSelect');
-    const playlistSelected = playlistSelect.value;
-    const selectedTrackCount = playlistSelect.options[playlistSelect.selectedIndex].dataset.trackCount;
-
-    // Validate enteredNumber
-    if (isNaN(enteredNumber)) {
-        console.error('Entered number is not a valid integer.');
-        alert('Please enter a valid number of songs.');
-        return;
-    }
-
-    // Additional range validation if needed
-    if (enteredNumber < 10 || enteredNumber > 50) {
-        console.error('Entered number is out of the valid range (10-50).');
-        alert('Please enter a number between 10 and 50.');
-        return;
-    }
-
-    if (selectedDifficulty && playlistSelected) {
-        console.log('Selected Difficulty:', selectedDifficulty);
-        console.log('Entered Number:', enteredNumber);
-        console.log('Type of enteredNumber:', typeof enteredNumber);
-        validSettings(selectedDifficulty, enteredNumber, playlistSelected, selectedTrackCount);
-        // You can now use the selectedDifficulty and enteredNumber variables as needed
-    } else {
-        console.error('Please choose all settings.');
-        alert('Please select a difficulty and a playlist.');
-    }
-});
-
-        
-        // Function to check if the settings are valid
-        function validSettings(selectedDifficulty, enteredNumber, playlistId, selectedTrackCount) {
-            console.log(selectedTrackCount)
-            if (selectedTrackCount < enteredNumber) {
-                console.error('Entered number is greater than the number of songs in the playlist.');
-            } else {
-                console.log('Valid settings:', selectedDifficulty, enteredNumber, playlistId);
-                handlePlayGameClick(selectedDifficulty, enteredNumber, playlistId)
-            }
+        if (selectedDifficulty && playlistSelected) {
+          console.log("Selected Difficulty:", selectedDifficulty);
+          console.log("Entered Number:", enteredNumber);
+          console.log("Type of enteredNumber:", typeof enteredNumber);
+          validSettings(
+            selectedDifficulty,
+            enteredNumber,
+            playlistSelected,
+            selectedTrackCount
+          );
+          // You can now use the selectedDifficulty and enteredNumber variables as needed
+        } else {
+          console.error("Please choose all settings.");
+          alert("Please select a difficulty and a playlist.");
         }
+      });
 
-        
-        function handlePlayGameClick(selectedDifficulty, enteredNumber, playlistId) {
-            
-            // Navigate to the game page with the playlist ID
-            const url = new URL('/gamePage', window.location.origin);
-            sessionStorage.setItem("selectedDifficulty", selectedDifficulty);
-            sessionStorage.setItem("emteredNumber", enteredNumber);
-            sessionStorage.setItem("playlistId", playlistId);
-            window.location.href = url;
-            // url.searchParams.append('selectedDifficulty', selectedDifficulty);
-            // url.searchParams.append('emteredNumber', enteredNumber);
-            // url.searchParams.append('playlistId', playlistId);
-            // window.location.href = url;
+      // Function to check if the settings are valid
+      function validSettings(
+        selectedDifficulty,
+        enteredNumber,
+        playlistId,
+        selectedTrackCount
+      ) {
+        console.log(selectedTrackCount);
+        if (selectedTrackCount < enteredNumber) {
+          console.error(
+            "Entered number is greater than the number of songs in the playlist."
+          );
+        } else {
+          console.log(
+            "Valid settings:",
+            selectedDifficulty,
+            enteredNumber,
+            playlistId
+          );
+          handlePlayGameClick(selectedDifficulty, enteredNumber, playlistId);
         }
+      }
+
+      function handlePlayGameClick(
+        selectedDifficulty,
+        enteredNumber,
+        playlistId
+      ) {
+        // Navigate to the game page with the playlist ID
+        const url = new URL("/gamePage", window.location.origin);
+        sessionStorage.setItem("selectedDifficulty", selectedDifficulty);
+        sessionStorage.setItem("emteredNumber", enteredNumber);
+        sessionStorage.setItem("playlistId", playlistId);
+        window.location.href = url;
+        // url.searchParams.append('selectedDifficulty', selectedDifficulty);
+        // url.searchParams.append('emteredNumber', enteredNumber);
+        // url.searchParams.append('playlistId', playlistId);
+        // window.location.href = url;
+      }
     </script>
-</body>
+  </body>
 </html>
