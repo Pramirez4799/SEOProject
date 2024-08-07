@@ -22,15 +22,15 @@
         position: relative;
         display: inline-flex;
         justify-content: space-between;
-        width: 50px; /* Increased size for visibility */
-        height: 50px; /* Increased size for visibility */
-        margin-right: 8px;
+        width: 80px; /* Increased size for larger visibility */
+        height: 80px; /* Increased size for larger visibility */
+        margin-bottom: 20px; /* Margin between the icon and the audio player */
       }
 
       .icon > span {
-        width: 8px; /* Increased width for visibility */
+        width: 16px; /* Increased width for visibility */
         height: 100%;
-        background-color: var(--brand);
+        background-color: black; /* New color for the bars (e.g., deep orange) */
         border-radius: 3px;
         transform-origin: bottom;
         transition: opacity 0.3s ease-out;
@@ -97,30 +97,35 @@
 
       .roundnumber {
         grid-area: roundnumber;
-        color: rgb(23, 233, 146);
+        color: black;
         text-align: center;
-        font-size: 3.5rem;
+        font-size: 4rem;
       }
 
       .timer123 {
         grid-area: timer123;
-        background-color: rgb(255, 251, 0);
+        background-color: white;
         text-align: center;
       }
 
       .display {
         grid-area: display;
-        background-color: rgb(5, 28, 241);
+        background-color: #2463eb;
+        display: flex;
+        flex-direction: column; /* Stack icon and audio player vertically */
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
       }
 
       .choices {
         grid-area: choices;
-        background-color: rgb(97, 248, 37);
+        background-color: #2463eb;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         justify-items: center;
-        font-size: 1.5rem;
+        font-size: 2rem;
       }
 
       .choices button {
@@ -139,7 +144,7 @@
 
       .footer {
         grid-area: footer;
-        background-color: rgb(252, 5, 5);
+        background-color: #2463eb;
         padding: 10px;
         text-align: center;
         display: flex;
@@ -150,9 +155,8 @@
       }
 
       .play-snippet {
-        grid-column: 1 / span 3;
-        grid-row: 3;
-        background-color: lightcoral;
+        width: 100%;
+        max-width: 800px; /* Set a max-width to control the size of the audio player */
         padding: 20px;
         text-align: center;
         color: white;
@@ -165,6 +169,11 @@
         text-align: center;
       }
 
+      #audioPlayer {
+        width: 100%; /* Make audio player take full width of its container */
+        height: 50px; /* Adjust height for better visibility */
+      }
+
       .modal-toggle {
         display: none;
       }
@@ -175,8 +184,8 @@
       }
       #logOffButton {
         font-size: 2.5rem;
-        width: 240px; /* Larger width for bigger radio buttons */
-        height: 60px; /* Larger height for bigger radio buttons */
+        width: 240px; /* Larger width for bigger button */
+        height: 60px; /* Larger height for bigger button */
       }
     </style>
   </head>
