@@ -53,13 +53,14 @@
       /* /end Codepen Specific */
       /* Ladder Navigation */
       #leaderboard {
-        padding: 50px;
+        /* padding: 50px; */
       }
       .ladder-nav {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         background: #5055cb;
+        margin-top: 90px;
         padding: 10px 25px;
         border-radius: 10px;
         border: 1px solid #686ef9;
@@ -139,44 +140,78 @@
         color: #747474;
       }
       /* /end Leaderboard Results */
+
+      /* Leaderboard Button Styling */
+      .top-left-button {
+        position: absolute;
+        top: 20px;
+        /* left: 20px; */
+        padding: 10px 20px;
+        background-color: #5055cb;
+        color: white;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        z-index: 10; /* Ensure button is above other elements */
+      }
+
+      .top-left-button:hover {
+        background-color: #888dff;
+      }
+      .thecontainer {
+        margin-top: 50px;
+      }
     </style>
   </head>
 
   <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="container-wrap">
-      <section id="leaderboard">
-        <nav class="ladder-nav">
-          <div class="ladder-title">
-            <h1>Standings</h1>
-          </div>
-          <div class="ladder-search">
-            <input
-              type="text"
-              id="search-leaderboard"
-              class="live-search-box"
-              placeholder="Search Player..."
-            />
-          </div>
-        </nav>
-        <table id="rankings" class="leaderboard-results" width="100%">
-          <thead>
-            <tr>
-              <th>Ranking</th>
-              <th>Username</th>
-              <th>Highest Score</th>
-              <th>Average Score</th>
-              <th>Accuracy (%)</th>
-              <th>Games Played</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- User data will be dynamically inserted here -->
-          </tbody>
-        </table>
-      </section>
+    <!-- Top Left Button -->
+    <form action="/settings" method="get">
+      <button class="top-left-button">Menu</button>
+    </form>
+    <div class="thecontainer">
+      <div class="container-wrap">
+        <section id="leaderboard">
+          <nav class="ladder-nav">
+            <div class="ladder-title">
+              <h1>Standings</h1>
+            </div>
+            <div class="ladder-search">
+              <input
+                type="text"
+                id="search-leaderboard"
+                class="live-search-box"
+                placeholder="Search Player..."
+              />
+            </div>
+          </nav>
+          <table id="rankings" class="leaderboard-results" width="100%">
+            <thead>
+              <tr>
+                <th>Ranking</th>
+                <th>Username</th>
+                <th>Highest Score</th>
+                <th>Average Score</th>
+                <th>Accuracy (%)</th>
+                <th>Games Played</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- User data will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </section>
+      </div>
     </div>
 
     <script>
+      // Redirect to a different page when the button is clicked
+      function goToDashboard() {
+        window.location.href = "/dashboard"; // Change the URL to your desired destination
+      }
+
       // Fetch user data from the server
       async function fetchUsers() {
         try {
