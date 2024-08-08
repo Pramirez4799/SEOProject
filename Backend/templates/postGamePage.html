@@ -13,24 +13,24 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
-      /* Ensure --brand is defined or use a solid color */
+      /* */
       :root {
-        --brand: #3498db; /* Example brand color */
+        --brand: #3498db;
       }
 
       .icon {
         position: relative;
         display: inline-flex;
         justify-content: space-between;
-        width: 80px; /* Increased size for larger visibility */
-        height: 80px; /* Increased size for larger visibility */
-        margin-bottom: 20px; /* Margin between the icon and the audio player */
+        width: 80px;
+        height: 80px;
+        margin-bottom: 20px;
       }
 
       .icon > span {
-        width: 16px; /* Increased width for visibility */
+        width: 16px;
         height: 100%;
-        background-color: black; /* New color for the bars (e.g., deep orange) */
+        background-color: black;
         border-radius: 3px;
         transform-origin: bottom;
         transition: opacity 0.3s ease-out;
@@ -170,8 +170,8 @@
       }
 
       #audioPlayer {
-        width: 100%; /* Make audio player take full width of its container */
-        height: 50px; /* Adjust height for better visibility */
+        width: 100%;
+        height: 50px;
       }
 
       .modal-toggle {
@@ -184,26 +184,26 @@
       }
       #logOffButton {
         font-size: 2.5rem;
-        width: 240px; /* Larger width for bigger button */
-        height: 60px; /* Larger height for bigger button */
+        width: 240px;
+        height: 60px;
       }
     </style>
   </head>
 
   <body>
     <!-- Modal Structure -->
-    <!-- TODO: add message for completion of high score -->
     <input type="checkbox" id="my_modal_6" class="modal-toggle" />
     <div class="modal" role="dialog">
       <div class="modal-box">
         <h3 class="text-lg font-bold">Game Over!</h3>
         <p class="py-4">What would you like to do next?</p>
         <h3 class="text-lg font-bold" id="gamescore"></h3>
+        <h3 class="text-lg font-bold" id="songsCorrect"></h3>
         <div class="modal-action flex space-x-4">
           <form action="/gamePage" method="get">
             <button type="submit" class="btn">Play Again</button>
           </form>
-          <a href="/" class="btn">Menu</a>
+          <a href="/settings" class="btn">Menu</a>
         </div>
       </div>
     </div>

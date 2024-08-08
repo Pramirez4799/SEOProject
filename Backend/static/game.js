@@ -82,15 +82,15 @@ async function initializePage() {
   let diff = getDifficulty();
   if (diff == "easy") {
     difficulty = 1;
-    initialTime = 30 * totalRounds;
+    initialTime = 9 * totalRounds;
     countdownTime = initialTime;
   } else if (diff == "medium") {
     difficulty = 1.5;
-    initialTime = 15 * totalRounds;
+    initialTime = 6 * totalRounds;
     countdownTime = initialTime;
   } else if (diff == "hard") {
     difficulty = 2;
-    initialTime = 6 * totalRounds;
+    initialTime = 3 * totalRounds;
     countdownTime = initialTime;
   }
   await fetchSongs(playlistId);
@@ -100,7 +100,6 @@ async function initializePage() {
 // Grab all songs and load to songs array (only need to do once)
 async function fetchSongs(playlistId) {
   try {
-    // Add a cache-busting query parameter
     const response = await fetch(
       `/playlist/${playlistId}/tracks?nocache=${new Date().getTime()}`
     );
@@ -221,7 +220,6 @@ function loadSongsToPage() {
 
 // Function to start the countdown timer
 function startCountdown() {
-  // Clear any existing interval
   clearInterval(timerInterval);
 
   // Update the timer display every second
@@ -264,6 +262,8 @@ function updateAnswer(value) {
     showModal();
     console.log(countdownTime);
     clearInterval(timerInterval); // Stop the timer
+    document.getElementById("songsCorrect").innerHTML =
+      "Songs Guessed Correctly: " + numberOfSongsGuessed;
     //update score for html
     document.getElementById("gamescore").innerHTML =
       "Score: " + calculateScore();
