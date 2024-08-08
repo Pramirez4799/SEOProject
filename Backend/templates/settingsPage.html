@@ -14,19 +14,21 @@
         margin: 0;
         height: 100vh;
         display: flex;
-        align-items: center; /* Center vertically */
-        justify-content: center; /* Center horizontally */
+        /* center menu in middle of screen */
+        align-items: center;
+        justify-content: center;
         font-family: "Comic Neue", cursive;
         font-weight: 700;
         font-style: italic;
-        background-color: #f0f4f8; /* Light background for contrast */
-        font-size: 1.5rem; /* Adjusted for better readability */
+        background-color: #f0f4f8;
+        font-size: 1.5rem;
       }
 
       .container {
+        /* determine grid of site */
         display: grid;
-        grid-template-columns: 1fr; /* Single column layout */
-        grid-template-rows: repeat(5, 1fr); /* Five equal rows */
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(5, 1fr);
         grid-template-areas:
           "number"
           "playlist"
@@ -34,113 +36,81 @@
           "options"
           "startBot";
         width: 90%;
-        max-width: 600px; /* Limit max width */
-        height: 90vh; /* Adjust height */
-        max-height: 900px; /* Limit max height */
-        gap: 10px; /* Add some space between grid items */
-        padding: 20px; /* Add some padding for content spacing */
+        height: 90vh;
+        /* center main content in more of container */
+        padding: 20px;
         background-color: #ffffff; /* Background color for container */
         border-radius: 10px; /* Rounded corners */
         margin-top: 8rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for better visual */
-      }
-
-      .number,
-      .playlist,
-      .diff,
-      .options,
-      .startBot {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        border-radius: 8px; /* Rounded corners for styling */
-        color: #333; /* Darker text for contrast */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       .number {
         grid-area: number;
-        /* background-color: rgb(255, 251, 0); */
       }
 
       .playlist {
         grid-area: playlist;
-        /* background-color: rgb(19, 233, 105); */
-        justify-content: space-between; /* Flexbox: space between elements */
-        padding: 0 20px; /* Add padding for spacing */
       }
 
       .diff {
         grid-area: diff;
-        /* background-color: rgb(227, 16, 174); */
       }
 
       .options {
         grid-area: options;
-        /* background-color: rgb(72, 18, 248); */
-        gap: 20px;
       }
 
       .startBot {
         grid-area: startBot;
-        /* background-color: rgb(255, 0, 0); */
       }
 
       .option-label {
+        /* center text of difficulties */
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 140px; /* Larger width for bigger radio buttons */
-        height: 140px; /* Larger height for bigger radio buttons */
+        /* size of buttons */
+        width: 140px;
+        height: 140px;
         background-color: #ccc;
-        border-radius: 10px; /* More pronounced rounded corners */
+        border-radius: 10px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
-        font-size: 2.5rem; /* Match the font size of the main text */
+        /* size of text */
+        font-size: 2.5rem;
       }
 
-      .option-input {
-        display: none;
-      }
-
+      /* settings when difficulty button is clicked */
       .option-input:checked + .option-label {
         background-color: #666;
         color: white;
       }
 
-      .input-container input,
-      .input-container select,
-      .input-container button {
-        padding: 5px;
-        font-size: 16px;
-        margin-top: 5px;
-        width: 80%;
-      }
-
       /* Font sizes for number of songs text and input box */
       .large-label {
-        font-size: 2.75rem; /* 2.75 * 16px = 44px */
+        font-size: 2.75rem;
       }
 
       .large-input {
-        font-size: 2.75rem; /* 2.75 * 16px = 44px */
+        font-size: 2.75rem;
       }
 
       /* Font size for difficulty text */
       .large-input2 {
-        font-size: 3.5rem; /* 3.5 * 16px = 56px */
+        font-size: 3.5rem;
       }
       #checkButton {
         font-size: 2.75rem;
       }
-
+      /* for top leaderboard and logoff buttons */
       .header-buttons {
         position: absolute;
-        top: 20px; /* Position from top */
-        left: 20px; /* Position from left */
-        right: 20px; /* Position from right */
+        top: 20px;
+        left: 20px;
+        right: 20px;
         display: flex;
-        justify-content: space-between; /* Space out buttons evenly */
+        justify-content: space-between;
       }
     </style>
   </head>
@@ -192,7 +162,7 @@
             class="w-3/4 p-2 border border-gray-300 rounded-lg ml-auto large-input"
           >
             <option value="">--Select Playlist--</option>
-            <!-- Options will be populated here -->
+            <!-- options will appear here -->
           </select>
         </div>
       </div>
@@ -248,33 +218,30 @@
     </div>
     <script>
       sessionStorage.setItem("spotifyId", "{{ spotify_id }}");
+
       function getPlaylists() {
         // Fetch playlists from the user's Spotify account
         fetch("/playlists")
           .then((response) => response.json())
           .then((data) => {
-            // Array to hold the filtered playlists
-            const filteredPlaylists = [];
-
-            // Filter playlists with at least 10 tracks and add them to the array
-            if (data.items) {
-              data.items.forEach((playlist) => {
-                if (playlist.tracks.total >= 10) {
-                  filteredPlaylists.push({
-                    id: playlist.id,
-                    name: playlist.name,
-                    trackCount: playlist.tracks.total,
-                  });
-                }
-              });
-            }
-
-            // Populate the options dropdown with the filtered playlists
-            populateDropdown(filteredPlaylists);
+            // Store the fetched playlists globally
+            window.playlists = data.items || [];
+            // Filter playlists initially based on the default number of songs
+            filterAndPopulatePlaylists();
           })
           .catch((error) => {
             console.error("Error fetching playlists:", error);
           });
+      }
+
+      // Function to filter and populate the options dropdown
+      function filterAndPopulatePlaylists() {
+        const numberInput = document.getElementById("numberInput");
+        const selectedNumber = parseInt(numberInput.value, 10) || 0;
+        const filteredPlaylists = window.playlists.filter(
+          (playlist) => playlist.tracks.total >= selectedNumber
+        );
+        populateDropdown(filteredPlaylists);
       }
 
       // Function to populate the options dropdown
@@ -290,13 +257,18 @@
           const option = document.createElement("option");
           option.value = playlist.id;
           option.textContent = playlist.name;
-          option.dataset.trackCount = playlist.trackCount;
+          option.dataset.trackCount = playlist.tracks.total;
           playlistSelect.appendChild(option);
         });
       }
 
       // Call getPlaylists to fetch and display the playlists when the page loads
       getPlaylists();
+
+      // Add event listener to number input field
+      document
+        .getElementById("numberInput")
+        .addEventListener("input", filterAndPopulatePlaylists);
 
       // Function to get the selected difficulty
       function getSelectedDifficulty() {
@@ -310,7 +282,6 @@
         }
       }
 
-      // Event listener for the button click
       // Event listener for the button click
       document.getElementById("checkButton").addEventListener("click", () => {
         const selectedDifficulty = getSelectedDifficulty();
@@ -384,13 +355,9 @@
         // Navigate to the game page with the playlist ID
         const url = new URL("/gamePage", window.location.origin);
         sessionStorage.setItem("selectedDifficulty", selectedDifficulty);
-        sessionStorage.setItem("emteredNumber", enteredNumber);
+        sessionStorage.setItem("enteredNumber", enteredNumber);
         sessionStorage.setItem("playlistId", playlistId);
         window.location.href = url;
-        // url.searchParams.append('selectedDifficulty', selectedDifficulty);
-        // url.searchParams.append('emteredNumber', enteredNumber);
-        // url.searchParams.append('playlistId', playlistId);
-        // window.location.href = url;
       }
     </script>
   </body>

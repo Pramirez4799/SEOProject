@@ -11,8 +11,10 @@
       body,
       html {
         height: 100%;
+        /* remove default margin */
         margin: 0;
         display: flex;
+        /* horizontally and vertically center content */
         justify-content: center;
         align-items: center;
         background-color: #f0f4f8;
@@ -33,6 +35,7 @@
 
       .login-button {
         font-size: 2rem;
+        /* add some spacing around button */
         padding: 1rem 2rem;
         background-color: #1db954; /* Spotify Green */
         color: white;
@@ -41,15 +44,14 @@
         cursor: pointer;
         transition: background-color 0.3s;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto; /* Center the button horizontally */
+        /* Center the button horizontally */
+        margin: 0 auto;
       }
 
       .login-button:hover {
         background-color: #1aa34a;
       }
-
+      /* styling of svg icon */
       .login-button svg {
         margin-right: 10px;
         width: 24px;
@@ -59,9 +61,10 @@
   </head>
   <body>
     <div class="container">
-      <div class="title">Spotify Song Challenge</div>
+      <div class="title">Hootify</div>
       <form action="/login" method="get">
         <button class="login-button">
+          <!-- music logo icon -->
           <svg
             role="img"
             xmlns="http://www.w3.org/2000/svg"
